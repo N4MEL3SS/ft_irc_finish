@@ -4,7 +4,7 @@ Server::Server(int port, const std::string& password, const std::string& path_to
 		_server_password(password), _port(port), _path_to_config_file(path_to_conf)
 {
 	_config = parseConfigFile(path_to_conf);
-	printConfigFileFields(_config);
+//	printConfigFileFields(_config);
 
 }
 
@@ -71,7 +71,6 @@ void Server::acceptConnection()
 
 void Server::messageProcessing()
 {
-	//TODO: добавить timeout?
 	_current_connections = poll(_users_pollfd.data(), _users_pollfd.size(), 0);
 
 	if (_current_connections > 0)
@@ -80,9 +79,7 @@ void Server::messageProcessing()
 		for (int i = 0; i < fd_count; i++)
 		{
 			if (_users_pollfd[i].revents & POLLIN && _users_fd_map[_users_pollfd[i].fd]->getConnectionStatus())
-			{
 				messageHandler(_users_pollfd[i].fd);
-			}
 			_users_pollfd[i].revents = 0;
 		}
 	}
@@ -104,12 +101,12 @@ void Server::messageHandler(int user_fd)
 		}
 		else if (_commands_map.find(cmd) != _commands_map.end())
 		{
-			_commands_map.at(cmd);
+			int ret = (this->*(_commands_map.at(cmd)))(*_users_fd_map[user_fd], clientMessage);
+			if (ret == DISCONNECT)
+				_delete_users.push_back(user_fd);
 		}
 		else
-		{
 			replyError(user_fd, ERR_UNKNOWNCOMMAND, cmd);
-		}
 	}
 }
 

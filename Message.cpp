@@ -1,44 +1,10 @@
 #include "Message.hpp"
 
 Message::Message() {}
-
 Message::~Message() {}
-
-//int Message::readMessage(int fd)
-//{
-//	std::string	text;
-//	if (!message_queue.empty())
-//		text = message_queue.front();
-//
-//	char buffer[BUFF_SIZE];
-//	int bytesRead;
-//	while ((bytesRead = recv(fd, buffer, BUFF_SIZE, 0)) > 0)
-//	{
-//		buffer[bytesRead] = 0;
-//		text += buffer;
-//		buffer[0] = 0;
-//		if (text.find('\n') != std::string::npos)
-//			break;
-//	}
-//	if (text.length() > 512)
-//		text = text.substr(0, 510) + "\r\n";
-////	if (bytesRead == 0)
-////		return (DISCONNECT);
-//	while (text.find("\r\n") != std::string::npos)
-//		text.replace(text.find("\r\n"), 2, "\n");
-//	if (text.size() > 1)
-//		message_queue = split(text, '\n', true);
-//
-//	// TODO: для дебага
-//	std::cout << "Input from client:\n";
-//	std::cout << text << std::endl;
-//	return 0;
-//}
 
 void Message::readMessage(int fd, User& user)
 {
-//	std::string message;
-
 	if (user.getIsPartialMessage())
 	{
 		_message_raw += user.getPartialMessage();
@@ -60,47 +26,30 @@ void Message::readMessage(int fd, User& user)
 			break;
 
 		// TODO: Стоит ли терминировать строку ?
-		buff[0] = '\0';
+//		buff[0] = '\0';
 	}
 
 	if (bytesRead <= 0 && _message_raw.empty())
 		_message_raw = "QUIT";
-//		return "QUIT";
 
 	if (_message_raw.length() > 512)
 		_message_raw.substr(0, 510) + '\n';
 
-	size_t cnlr;
-
-	/*if ((cnlr = message.find('\r', 0)) != std::string::npos)
-	{
-		message = message.substr(0, cnlr);
-	}
-	else if ((cnlr = message.find('\n', 0)) != std::string::npos)
-	{
-		message = message.substr(0, cnlr);
-	}*/
 	while (_message_raw.find("\r\n") != std::string::npos)
 		_message_raw.replace(_message_raw.find("\r\n"), 2, "\n");
 
+	size_t cnlr;
 	if ((cnlr = _message_raw.find(EOF, 0)) != std::string::npos)
 	{
 		user.setPartialMessage(_message_raw.substr(0, cnlr));
 		user.setIsPartialMessage(true);
 		_message_raw.clear();
-
-//		return _message_raw;
 	}
 
 	_message_queue = split(_message_raw, '\n');
 
-//	std::string result(message.begin(), message.end());
-
 	// TODO: дебаг. удалить после тестирования
 	std::cout << "Input from client:\n" << _message_raw << std::endl;
-
-//	return result;
-//	return _message_raw;
 }
 
 void Message::parsingMessage()
@@ -131,10 +80,8 @@ void Message::parsingMessage()
 	// TODO: флаг - это костыль?
 	while (!split_msg.empty())
 	{
-		if (split_msg.front()[0] != ':' and postfix_flag)
-		{
+		if (postfix_flag && split_msg.front()[0] != ':')
 			this->_postfix.push_back(split_msg.front());
-		}
 		else
 		{
 			this->_parameters.push_back(split_msg.front());
@@ -142,7 +89,10 @@ void Message::parsingMessage()
 		}
 		split_msg.pop();
 	}
-	_parameters.front().replace(0, 1, "");
+
+	if (_parameters.front()[0] == ':')
+		_parameters.front().replace(0, 1, "");
+
 	_message_queue.pop();
 }
 

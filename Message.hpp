@@ -19,8 +19,6 @@ class Message
 
  public:
 	Message();
-//	Message(const std::string &str);
-
 	~Message();
 
 	void readMessage(int fd, User& user);
