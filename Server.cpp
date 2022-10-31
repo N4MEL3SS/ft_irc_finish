@@ -4,6 +4,8 @@ Server::Server(int port, const std::string& password, const std::string& path_to
 		_server_password(password), _port(port), _path_to_config_file(path_to_conf)
 {
 	_config = parseConfigFile(path_to_conf);
+	printConfigFileFields(_config);
+
 }
 
 Server::~Server()
@@ -77,8 +79,7 @@ void Server::messageProcessing()
 		int fd_count = static_cast<int>(_users_pollfd.size());
 		for (int i = 0; i < fd_count; i++)
 		{
-//			if (_users_pollfd[i].revents & POLLIN && _users_fd_map[_users_pollfd[i].fd]->getConnectionStatus())
-			if (_users_pollfd[i].revents & POLLIN)
+			if (_users_pollfd[i].revents & POLLIN && _users_fd_map[_users_pollfd[i].fd]->getConnectionStatus())
 			{
 				messageHandler(_users_pollfd[i].fd);
 			}
@@ -94,108 +95,23 @@ void Server::messageHandler(int user_fd)
 	while (!clientMessage.getMessageQueue().empty())
 	{
 		clientMessage.parsingMessage();
+		std::string cmd = clientMessage.getCommand();
 
-		if (!_users_fd_map[user_fd]->getRegistrationStatus())
+		if (!_users_fd_map[user_fd]->getRegistrationStatus() && (cmd != "PASS" || cmd != "USER"
+			|| cmd != "PASS" || cmd != "QUIT"))
 		{
-			registrationUser(user_fd);
+			replyError(user_fd, ERR_NOTREGISTERED, "");
 		}
-
-		if (commands.getCommandsMap().find(clientMessage.getCommand()) != commands.getCommandsMap().end())
+		else if (_commands_map.find(cmd) != _commands_map.end())
 		{
-			commands.getCommandsMap().at(clientMessage.getCommand());
+			_commands_map.at(cmd);
 		}
 		else
 		{
-			ErrorReply(user_fd, ERR_UNKNOWNCOMMAND, clientMessage.getCommand());
+			replyError(user_fd, ERR_UNKNOWNCOMMAND, cmd);
 		}
 	}
 }
 
-void Server::registrationUser(int user_fd)
-{
-	std::string command = clientMessage.getCommand();
-	_users_fd_map[user_fd]->incRegistrationStage();
 
-	// TODO: Переделать через ссылку на registration_stage и arr_reg_command
-	if (_users_fd_map[user_fd]->getRegistrationStage() == 1 and command != "PASS")
-	{
-		_users_fd_map[user_fd]->zeroRegistrationStage();
-		ErrorReply(user_fd, ERR_NOTREGISTERED, "");
-	}
-	else if (_users_fd_map[user_fd]->getRegistrationStage() == 2 and command != "USER")
-	{
-		_users_fd_map[user_fd]->zeroRegistrationStage();
-		ErrorReply(user_fd, ERR_NOTREGISTERED, "");
-	}
-	else if (_users_fd_map[user_fd]->getRegistrationStage() == 3 and command != "NICK")
-	{
-		_users_fd_map[user_fd]->zeroRegistrationStage();
-		ErrorReply(user_fd, ERR_NOTREGISTERED, "");
-	}
-	if (_users_fd_map[user_fd]->getRegistrationStage() == 4)
-}
-
-void Server::ErrorReply(int user_fd, int reply, std::string arg)
-{
-	std::string message = intToString(reply) + ' ' + arg;
-
-	switch(reply)
-	{
-	case ERR_NOTREGISTERED:
-		message += " :You have not registered";
-		break;
-	case ERR_PASSWDMISMATCH:
-		message += " :Password incorrect";
-		break;
-	case ERR_NEEDMOREPARAMS:
-		message += " :Not enough parameters";
-		break;
-	case ERR_NICKNAMEINUSE:
-		message += " :Nickname is already in use";
-		break;
-	case ERR_NOSUCHNICK:
-		message += " :No such nick/channel";
-		break ;
-	case ERR_NOSUCHCHANNEL:
-		message += " :No such channel";
-		break;
-	case ERR_NONICKNAMEGIVEN:
-		message += " :No nickname given";
-		break;
-	case ERR_ERRONEUSNICKNAME:
-		message += " :Erroneus nickname";
-		break;
-	case ERR_NOTONCHANNEL:
-		message += " :They aren't on that channel";
-		break;
-	case ERR_ALREADYREGISTRED:
-		message += " :You may not reregister";
-		break;
-	case ERR_NOPRIVILEGES:
-		message += " :Permission Denied- You're not an IRC operator";
-		break;
-	case ERR_NORECIPIENT:
-		message += " :No recipient given";
-		break;
-	case ERR_UNKNOWNCOMMAND:
-		message += " :Unknown command";
-		break;
-	}
-	message += "\r\n";
-	send(user_fd, message.c_str(), message.size(), 0);
-}
-
-void Server::printConfigFileFields() const
-{
-	std::cout << BLUE;
-	std::cout << "__________________ ===Server config=== __________________\n";
-	std::cout << "server name: " << _config.server_name << '\n';
-	std::cout << "info: " << _config.info << '\n';
-	std::cout << "admin name: "  << _config.admin_name << '\n';
-	std::cout << "admin nickname: " << _config.admin_nickname << '\n';
-	std::cout << "admin email: " << _config.admin_email << '\n';
-	std::cout << "Operator password doesn't show up due to security reasons\n";
-	std::cout << "maximum channels on server: " << _config.max_channels << '\n';
-	std::cout << "---------------------------------------------------------\n";
-	std::cout << RESET << std::endl;
-}
+config_file Server::getServerConfig() const { return _config; }

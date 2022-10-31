@@ -14,48 +14,46 @@ class User
 	// Файловый дескриптор пользователя
 	int _user_fd;
 
-	// прерванное ли сообщение
 	// TODO: Возможно лишнее
+	// прервано ли сообщение
 	bool _is_partial_message;
 	// Переменная для хранения прерванных сообщений
 	std::string _partial_message;
 
-	// Массив каналов в которых пользователь является оператором
-	// TODO: Возможно лишнее
-	std::map<std::string, bool> _operator_in_channels;
-
-	// Вектор каналов в которых пользователь состоит
-	// TODO: Возможно лишнее
-	std::vector<std::string> _include_in_channels;
-
 	// Подключен ли пользователь
 	bool _is_connected;
-	int _registered_stage;
 	// Зарегистрирован ли пользователь
 	bool _is_registered;
-	// Является ли пользователь администратором
-	bool _is_server_admin;
-
 
 	User();
 
  public:
-	User(int _user_fd);
+	User(int user_fd);
 	~User();
 
 	// Getter
-	int getRegistrationStage() const;
 	bool getRegistrationStatus() const;
 	bool getConnectionStatus() const;
-	bool getIsPartialMessage() const;
 
+	bool getIsPartialMessage() const;
 	std::string getPartialMessage() const;
+
+	int getUserFD() const;
+	std::string getNickName();
+	std::string getUserName();
+
+
 	// Setter
+
 	void setIsPartialMessage(bool condition);
 	void setPartialMessage(const std::string& message);
-	void setRegistrationStage(int var);
-	void zeroRegistrationStage();
-	void incRegistrationStage();
+
+	void setConnectionStatus(bool condition);
+	void setRegistrationStatus(bool condition);
+
+	void setNickName(const std::string& name);
+	void setUserName(const std::string& name);
+	void setRealName(const std::string& name);
 };
 
 #endif //USER_HPP

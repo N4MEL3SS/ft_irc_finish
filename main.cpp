@@ -11,7 +11,10 @@ void	sigHandler(int signum)
 
 int main(int argc, char *argv[])
 {
+	// TODO: Можно убрать если юзать IRC_NOSIGNAL в send
 	signal(SIGPIPE, SIG_IGN);
+
+	signal(SIGINT, sigHandler);
 	signal(SIGTERM, sigHandler);
 
 	if (argc != 3)
@@ -21,7 +24,6 @@ int main(int argc, char *argv[])
 	}
 
 	int port;
-	// TODO: Стоит разделить условие на 2 части с выводом ошибки под каждый из вариантов?
 	if (!isdigit(*argv[1]) || (port = atoi(argv[1])) > SHRT_MAX)
 	{
 		std::cout << RED << "Error! Incorrect port number" << RESET << std::endl;
@@ -29,12 +31,15 @@ int main(int argc, char *argv[])
 	}
 
 	Server MyServer(port, argv[2]);
-	MyServer.printConfigFileFields();
+	printConfigFileFields(MyServer.getServerConfig());
 	MyServer.initServer();
+	MyServer.initCommands();
 
 	while (work)
 	{
 		MyServer.acceptConnection();
 		MyServer.messageProcessing();
 	}
+
+	return 0;
 }

@@ -1,6 +1,9 @@
 #pragma once
 
-//error replies
+// Server define
+#define DISCONNECT 66
+
+// Error replies
 #define ERR_NOSUCHNICK 401
 #define ERR_NOSUCHCHANNEL 403
 #define ERR_NONICKNAMEGIVEN 431
@@ -16,7 +19,7 @@
 #define ERR_NORECIPIENT 411
 #define ERR_UNKNOWNCOMMAND 421
 
-//other
+// Reply
 #define RPL_MOTDSTART 375
 #define RPL_MOTD 372
 #define RPL_ENDOFMOTD 376

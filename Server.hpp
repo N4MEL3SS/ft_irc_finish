@@ -1,18 +1,18 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "Commands.hpp"
 #include "Channel.hpp"
 #include "Message.hpp"
 #include "User.hpp"
 #include "Utils.hpp"
-#include "numeric_replies.hpp"
+
+class Server;
+
+typedef int (Server::*Method)(User&, Message&);
 
 class Server
 {
  private:
-	// Класс Commands хранит в себе ссылки на выполняемые команды. Упрощает вызов команд
-	class Commands commands;
 	// Класс ClientMessage считывает и парсит входные данные со стороны клинта
 	class Message clientMessage;
 
@@ -27,19 +27,23 @@ class Server
 	std::string _path_to_config_file;
 	config_file _config;
 
-	// TODO: Возможно лишнее
-	int users_connect_count;
 
 	// Файловый дескриптор админа
 	int admin_server_fd;
 
-	// Словари позволяют захешировать данные для быстрого доступа к ним
-	// Словарь пользователей, где ключом служит их ник ники, а значением объект класса User
-	std::map<std::string, User *> _users_nick_map;
+	// Словарь для хранения ссылок на функции-команды
+	std::map<std::string, Method> _commands_map;
+
 	// Словарь пользователей, где ключом служит их fd, а значением объект класса User
 	std::map<int, User *> _users_fd_map;
-	// Словарь каналов, где ключом служит их ник название, а значением объект класса Channel
-	std::map<std::string, Channel *> channels_map;
+	// Словарь пользователей, где ключом служит их ник ники, а значением объект класса User
+	std::map<std::string, User *> _users_nick_map;
+
+	// Словарь каналов, где ключом служит их название, а значением объект класса Channel
+	std::map<std::string, Channel *> _channels_map;
+
+	// Вектор для хранения fd пользователей которых нужно удалить
+	std::vector<int> _delete_users;
 
  public:
 	~Server();
@@ -47,18 +51,25 @@ class Server
 			const std::string& path_to_conf = "./conf/conf.conf");
 
 	void initServer();
+	void initCommands();
 	void acceptConnection();
 	void messageProcessing();
 
 	void messageHandler(int user_fd);
 
-	void printConfigFileFields() const;
+	int passCmd(User &user, Message &msg);
+	int userCmd(User &user, Message &msg);
+	int nickCmd(User &user, Message &msg);
+	int quitCmd(User &user, Message &msg);
 
-	void registrationUser();
+	int privmsgCmd(User &user, Message &msg);
 
-	void registrationUser(int user_fd);
+	int joinCmd(User &user, Message &msg);
 
-	void ErrorReply(int user_fd, int reply, std::string arg);
+	int checkConnection(User& user);
+	void sendMOTD(User& user);
+
+	config_file getServerConfig() const;
 };
 
 #endif //SERVER_HPP

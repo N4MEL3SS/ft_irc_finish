@@ -128,6 +128,7 @@ void Message::parsingMessage()
 		split_msg.pop();
 	}
 
+	// TODO: флаг - это костыль?
 	while (!split_msg.empty())
 	{
 		if (split_msg.front()[0] != ':' and postfix_flag)
@@ -146,11 +147,9 @@ void Message::parsingMessage()
 }
 
 const std::string	&Message::getCommand() const { return _command; }
-
 const std::vector<std::string>	&Message::getPrefix() const { return _prefix; }
-
+const std::vector<std::string>& Message::getPostfix() const { return _postfix; }
 const std::vector<std::string>	&Message::getParams() const { return _parameters; }
-
 std::queue<std::string> Message::getMessageQueue() { return _message_queue; }
 
 void Message::clearData()

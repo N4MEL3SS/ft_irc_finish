@@ -28,6 +28,7 @@ class Message
 	// Getter
 	const std::string				&getCommand() const;
 	const std::vector<std::string>	&getPrefix() const;
+	const std::vector<std::string>	&getPostfix() const;
 	const std::vector<std::string>	&getParams() const;
 
 	void parsingMessage();

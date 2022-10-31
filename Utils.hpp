@@ -1,6 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -18,6 +19,14 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <poll.h>
+
+#include "numeric_replies.hpp"
+
+#ifdef __APPLE__
+#define IRC_NOSIGNAL SO_NOSIGPIPE
+#else
+#define IRC_NOSIGNAL MSG_NOSIGNAL
+#endif
 
 #define RED "\033[31m"
 #define GREEN "\033[32m"
@@ -51,6 +60,10 @@ std::string intToString(int number);
 
 config_file parseConfigFile(const std::string& path);
 
+void printConfigFileFields(const config_file& config);
+
 std::queue<std::string> split(const std::string &str, char sep);
+
+void replyError(int user_fd, int reply, std::string arg);
 
 #endif //UTILS_HPP

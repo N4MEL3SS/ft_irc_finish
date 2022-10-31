@@ -15,18 +15,11 @@ std::queue<std::string> split(const std::string &str, char sep)
 	while(i != str.end())
 	{
 		while (i != str.end() && *i == sep)
-			++i;
+			i++;
 
 		std::string::const_iterator	j = std::find(i, str.end(), sep);
 		if (i != str.end())
 		{
-			/*
-			if (include && j != str.end())
-				ret.push_back(std::string(i, j + 1));
-			else
-				ret.push_back(std::string(i, j));
-			*/
-
 			ret.push(std::string(i, j));
 			i = j;
 		}
@@ -78,12 +71,13 @@ void FillConf(std::map<std::string, std::string> &config_map, config_file &conf)
 
 config_file parseConfigFile(const std::string& path)
 {
-	std::ifstream conf_file(path);
+	std::ifstream conf_file;
 	std::stringstream ss;
 	std::map<std::string, std::string> config_map = MakeConfigMap();
 	std::string temp;
 	config_file conf;
 
+	conf_file.open(path.c_str());
 	if (!conf_file.is_open())
 		return conf;
 	ss << conf_file.rdbuf();
@@ -99,4 +93,69 @@ config_file parseConfigFile(const std::string& path)
 
 	FillConf(config_map, conf);
 	return conf;
+}
+
+void printConfigFileFields(const config_file& config)
+{
+	std::cout << BLUE;
+	std::cout << "__________________ ===Server config=== __________________\n";
+	std::cout << "server name: " << config.server_name << '\n';
+	std::cout << "info: " << config.info << '\n';
+	std::cout << "admin name: "  << config.admin_name << '\n';
+	std::cout << "admin nickname: " << config.admin_nickname << '\n';
+	std::cout << "admin email: " << config.admin_email << '\n';
+	std::cout << "Operator password doesn't show up due to security reasons\n";
+	std::cout << "maximum channels on server: " << config.max_channels << '\n';
+	std::cout << "---------------------------------------------------------\n";
+	std::cout << RESET << std::endl;
+}
+
+void replyError(int user_fd, int reply, std::string arg)
+{
+	std::string message = intToString(reply) + ' ' + arg;
+
+	switch(reply)
+	{
+	case ERR_NOTREGISTERED:
+		message += " :You have not registered";
+		break;
+	case ERR_PASSWDMISMATCH:
+		message += " :Password incorrect";
+		break;
+	case ERR_NEEDMOREPARAMS:
+		message += " :Not enough parameters";
+		break;
+	case ERR_NICKNAMEINUSE:
+		message += " :Nickname is already in use";
+		break;
+	case ERR_NOSUCHNICK:
+		message += " :No such nick/channel";
+		break ;
+	case ERR_NOSUCHCHANNEL:
+		message += " :No such channel";
+		break;
+	case ERR_NONICKNAMEGIVEN:
+		message += " :No nickname given";
+		break;
+	case ERR_ERRONEUSNICKNAME:
+		message += " :Erroneus nickname";
+		break;
+	case ERR_NOTONCHANNEL:
+		message += " :They aren't on that channel";
+		break;
+	case ERR_ALREADYREGISTRED:
+		message += " :You may not reregister";
+		break;
+	case ERR_NOPRIVILEGES:
+		message += " :Permission Denied- You're not an IRC operator";
+		break;
+	case ERR_NORECIPIENT:
+		message += " :No recipient given";
+		break;
+	case ERR_UNKNOWNCOMMAND:
+		message += " :Unknown command";
+		break;
+	}
+	message += "\r\n";
+	send(user_fd, message.c_str(), message.size(), 0);
 }

@@ -9,7 +9,7 @@ set(SERVER Server.cpp Server.hpp)
 set(USER User.cpp User.hpp)
 set(CHANNEL Channel.cpp Channel.hpp)
 set(MESSAGE Message.cpp Message.hpp)
-set(COMMANDS Commands.cpp Commands.hpp)
+set(COMMANDS Commands.cpp)
 set(UTILS Utils.cpp Utils.hpp)
 set(OTHER main.cpp numeric_replies.hpp)
 
