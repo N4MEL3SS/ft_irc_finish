@@ -91,10 +91,8 @@ void Server::sendMOTD(User& user)
 	message += ":server 372 " + user.getNickName() + " :- welcome to server\r\n";
 	message += ":server 376 " + user.getNickName() + " :End of /MOTD command\r\n";
 	message += "001 "+ user.getNickName() + " :Welcome to IRChat, " + user.getNickName() + "!" + user.getUserName() + "@127.0.0.1";
-	sendAnswer(user.getUserFD(), message);
 
-	std::cout << YELLOW << "Send to client\n" << RESET;
-	std::cout << BLUE << message << RESET << std::endl;
+	sendAnswer(user.getUserFD(), message);
 }
 
 int Server::quitCmd(User& user, Message& msg)
