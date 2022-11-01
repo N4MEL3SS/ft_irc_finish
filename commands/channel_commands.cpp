@@ -21,24 +21,26 @@ int Server::joinCmd(User& user, Message& msg)
 		}
 		else
 		{
-			if (keys.front() == _channels_map[chans.front()]->getChannelPassword())
+			if (keys.empty())
+				addUser(user, *_channels_map[chans.front()]);
+			else if (keys.front() == _channels_map[chans.front()]->getChannelPassword())
 				addUser(user, *_channels_map[chans.front()]);
 			else
 				replyError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 		}
 
 
-//		std::string check = createAnswerString(user, msg);
+		std::string check = createAnswerString(user, msg);
 //		std::string check =
 		sendAnswer(user.getUserFD(), check);
 
-		std::string y = ":" + _config.server_name + " 331 wabathur #asdfg :No topic is set";
+//		std::string y = ":" + _config.server_name + " 331 wabathur #asdfg :No topic is set";
 //		std::string y = "331 #asdfg :topic";
-		sendAnswer(user.getUserFD(), y);
+//		sendAnswer(user.getUserFD(), y);
 
 		std::string t = ":" + _config.server_name + " 353 wabathur = #asdfg :@wabathur";
 		sendAnswer(user.getUserFD(), t);
-		t = ":" + _config.server_name + " 366 wabathur #asdf :End of /NAMES list";
+		t = ":" + _config.server_name + " 366 wabathur #asdfg :End of /NAMES list";
 		sendAnswer(user.getUserFD(), t);
 
 		chans.pop();
@@ -75,8 +77,8 @@ int Server::checkChannelsError(User& user, Message &msg)
 
 int Server::whoCmd(User& user, Message &chan)
 {
-	std::string g = ":IRCat 315 wabathur wabathur :End of /WHO list";
-	sendAnswer(user.getUserFD(), g);
+//	std::string g = ":IRCat 315 wabathur wabathur :End of /WHO list";
+//	sendAnswer(user.getUserFD(), g);
 
 	return 0;
 }

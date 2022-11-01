@@ -10,6 +10,7 @@ void Server::initCommands()
 	_commands_map["ISON"] = &Server::isonCmd;
 
 	_commands_map["PRIVMSG"] = &Server::privmsgCmd;
+//	_commands_map["NOTICE"] = &Server::
 
 	_commands_map["PING"] = &Server::pingCmd;
 //	_commands_map["PONG"] = &Server::privmsgCmd;
@@ -17,8 +18,8 @@ void Server::initCommands()
 	_commands_map["JOIN"] = &Server::joinCmd;
 //	_commands_map["PART"] = &Server::
 	_commands_map["WHO"] = &Server::whoCmd;
-//	_commands_map["INVITE"] = &Server::
 //
+//	_commands_map["INVITE"] = &Server::
 //	_commands_map["KICK"] = &Server::
 //	_commands_map["TOPIC"] = &Server::
 //	_commands_map["LIST"] = &Server::
