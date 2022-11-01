@@ -78,6 +78,14 @@ class Server
 	void deleteUsersFromServer();
 
 	int isonCmd(User& user, Message& msg);
+
+	void addUser(User& user, Channel& chan);
+
+	int checkChannelsError(User& user, Message& msg);
+
+	std::string createAnswerString(User& user, Message& msg);
+
+	int whoCmd(User& user, Message& chan);
 };
 
 #endif //SERVER_HPP

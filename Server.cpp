@@ -103,8 +103,8 @@ void Server::messageHandler(int user_fd)
 			if (ret == DISCONNECT)
 				_delete_users.push_back(user_fd);
 		}
-		else
-			replyError(user_fd, ERR_UNKNOWNCOMMAND, cmd);
+//		else
+//			replyError(user_fd, ERR_UNKNOWNCOMMAND, cmd);
 	}
 }
 

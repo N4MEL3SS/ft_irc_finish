@@ -6,6 +6,7 @@
 class User
 {
  private:
+	// TODO: Чекнуть регистр ника
 	// Входные данные при регистрации. Могут быть изменены позднее
 	std::string _nickname;
 	std::string _username;

@@ -83,7 +83,11 @@ void Message::parsingMessage()
 	while (!split_msg.empty())
 	{
 		if (postfix_flag && split_msg.front()[0] != ':')
+		{
+			if (split_msg.front()[0] == ',')
+				split_msg.front().replace(0, 1, "");
 			this->_postfix.push_back(split_msg.front());
+		}
 		else
 		{
 			this->_parameters.push_back(split_msg.front());

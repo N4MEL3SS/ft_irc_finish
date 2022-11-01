@@ -111,7 +111,7 @@ void printConfigFileFields(const config_file& config)
 	std::cout << RESET << std::endl;
 }
 
-void replyError(int user_fd, int reply, const std::string& arg)
+int replyError(int user_fd, int reply, const std::string& arg)
 {
 	std::string message = intToString(reply) + ' ' + arg;
 
@@ -158,14 +158,29 @@ void replyError(int user_fd, int reply, const std::string& arg)
 		break;
 	case ERR_NOORIGIN:
 		message += " :No origin specified";
+	case ERR_TOOMANYCHANNELS:
+		message += " " + arg + " :You have joined too many channels";
 	default:
 		break;
 	}
 
 	sendAnswer(user_fd, message);
+	return 1;
 }
 
-void sendAnswer(int fd, std::string& msg)
+void sendAnswer(int fd, std::string msg)
+{
+	msg += "\r\n";
+	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
+
+	if (std::count(msg.begin(), msg.end(), '\n') > 1)
+		std::cout << YELLOW << "Send to client\n" << RESET;
+	else
+		std::cout << YELLOW << "Send to client: " << RESET;
+	std::cout << BLUE << msg << RESET << std::endl;
+}
+
+void sendAnswer(int fd, std::string &msg)
 {
 	msg += "\r\n";
 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
