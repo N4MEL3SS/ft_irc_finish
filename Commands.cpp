@@ -113,7 +113,7 @@ int Server::pingCmd(User& user, Message& msg)
 	else
 	{
 		std::string answer;
-		answer = ":" + _config.server_name + " PONG :" + msg.getParams()[0] + "/r/n";
+		answer = ":" + _config.server_name + " PONG :" + msg.getParams()[0];
 
 		sendAnswer(user.getUserFD(), answer);
 	}
