@@ -7,6 +7,8 @@ void Server::initCommands()
 	_commands_map["NICK"] = &Server::nickCmd;
 	_commands_map["QUIT"] = &Server::quitCmd;
 
+	_commands_map["ISON"] = &Server::isonCmd;
+
 	_commands_map["PRIVMSG"] = &Server::privmsgCmd;
 
 	_commands_map["PING"] = &Server::pingCmd;
@@ -29,13 +31,37 @@ void Server::initCommands()
 //	_commands_map["NAMES"] = &Server::
 }
 
+int Server::isonCmd(User& user, Message& msg)
+{
+	if (msg.getParams().empty())
+		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+
+	std::string nickname_list;
+
+	for (int i = 0; i < msg.getParams().size(); i++)
+	{
+		if (_users_nick_map.find(msg.getParams()[i]) != _users_nick_map.end())
+		{
+			if (!nickname_list.empty())
+				nickname_list += " ";
+			nickname_list += msg.getParams()[i];
+		}
+	}
+
+	if (nickname_list.empty())
+		nickname_list = "";
+	sendAnswer(user.getUserFD(), nickname_list);
+
+	return 0;
+}
+
 int Server::passCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
 		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (user.getRegistrationStatus())
 		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
-	else if (msg.getParams().back() != _server_password)
+	else if (msg.getParamsStr() != _server_password)
 		return DISCONNECT;
 
 	return 0;
@@ -49,7 +75,7 @@ int Server::userCmd(User& user, Message& msg)
 		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
 	else
 	{
-		user.setRealName(msg.getParams().back());
+		user.setRealName(msg.getParamsStr());
 		user.setUserName(msg.getPostfix()[0]);
 	}
 
@@ -57,14 +83,15 @@ int Server::userCmd(User& user, Message& msg)
 }
 
 // TODO: Добавить верификацию ника
+// TODO: Считать ли вариант NICK user test валидным?
 int Server::nickCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
 		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
-	else if (_users_nick_map.find(msg.getParams()[0]) != _users_nick_map.end())
-		replyError(user.getUserFD(), ERR_NICKNAMEINUSE, msg.getParams()[0]);
+	else if (_users_nick_map.find(msg.getParamsStr()) != _users_nick_map.end())
+		replyError(user.getUserFD(), ERR_NICKNAMEINUSE, msg.getParamsStr());
 	else
-		user.setNickName(msg.getParams()[0]);
+		user.setNickName(msg.getParamsStr());
 
 	return checkConnection(user);
 }

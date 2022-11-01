@@ -71,7 +71,7 @@ void Message::parsingMessage()
 
 	if (!split_msg.empty() && split_msg.front()[0] == ':')
 	{
-		this->_prefix.push_back(split_msg.front().replace(0, 1, ""));
+		this->_prefix = split_msg.front().replace(0, 1, "");
 		split_msg.pop();
 	}
 	if (!split_msg.empty())
@@ -96,29 +96,28 @@ void Message::parsingMessage()
 	if (_parameters.front()[0] == ':')
 		_parameters.front().replace(0, 1, "");
 
-	joinString(this->_postfix);
-	joinString(this->_parameters);
+	joinString(this->_postfix, _postfix_str);
+	joinString(this->_parameters, _parameters_str);
 
 	_message_queue.pop();
 }
 
-void Message::joinString(std::vector<std::string>& msg)
+void Message::joinString(std::vector<std::string>& dst, std::string& src)
 {
-	if (msg.size() > 1)
+	if (dst.size() > 1)
 	{
-		for (int i = 0; i < msg.size() - 1; i++)
-			_join_msg += msg[i] + " ";
-
-		_join_msg += msg.back();
-		msg.push_back(_join_msg);
-		_join_msg.clear();
+		for (int i = 0; i < dst.size() - 1; i++)
+			src += dst[i] + " ";
+		src += dst.back();
 	}
 }
 
 const std::string	&Message::getCommand() const { return _command; }
-const std::vector<std::string>	&Message::getPrefix() const { return _prefix; }
+const std::string	&Message::getPrefix() const { return _prefix; }
 const std::vector<std::string>& Message::getPostfix() const { return _postfix; }
+const std::string &Message::getPostfixStr() const { return _postfix_str; }
 const std::vector<std::string>	&Message::getParams() const { return _parameters; }
+const std::string &Message::getParamsStr() const { return _parameters_str; }
 std::queue<std::string> Message::getMessageQueue() { return _message_queue; }
 
 void Message::clearData()

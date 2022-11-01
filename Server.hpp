@@ -77,6 +77,7 @@ class Server
 
 	void deleteUsersFromServer();
 
+	int isonCmd(User& user, Message& msg);
 };
 
 #endif //SERVER_HPP

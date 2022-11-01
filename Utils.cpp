@@ -97,6 +97,7 @@ config_file parseConfigFile(const std::string& path)
 
 void printConfigFileFields(const config_file& config)
 {
+	// TODO: Поискать другой цвет
 	std::cout << GRAY;
 	std::cout << "__________________ ===Server config=== __________________\n";
 	std::cout << "Server name: " << config.server_name << '\n';

@@ -12,6 +12,7 @@ Server::~Server()
 	for (int i = 0; i < static_cast<int>(_users_fd_map.size()); i++)
 	{
 		// TODO: Необходимо ли удалять запись из словаря??? Проверить на утечки
+		close(_users_pollfd[i].fd);
 		delete _users_fd_map[_users_pollfd[i].fd];
 	}
 }
