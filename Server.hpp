@@ -66,10 +66,17 @@ class Server
 
 	int joinCmd(User &user, Message &msg);
 
+	int pingCmd(User& user, Message& msg);
+
 	int checkConnection(User& user);
 	void sendMOTD(User& user);
 
 	config_file getServerConfig() const;
+
+	int findPollfd(int fd);
+
+	void deleteUsersFromServer();
+
 };
 
 #endif //SERVER_HPP

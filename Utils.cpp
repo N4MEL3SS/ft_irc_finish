@@ -43,7 +43,7 @@ std::map<std::string, std::string> MakeConfigMap()
 	return config_map;
 }
 
-void FillConfigMap(std::map<std::string, std::string> &config_map, std::string temp)
+void FillConfigMap(std::map<std::string, std::string> &config_map, const std::string& temp)
 {
 	std::string key;
 	std::string value;
@@ -97,20 +97,20 @@ config_file parseConfigFile(const std::string& path)
 
 void printConfigFileFields(const config_file& config)
 {
-	std::cout << BLUE;
+	std::cout << GRAY;
 	std::cout << "__________________ ===Server config=== __________________\n";
-	std::cout << "server name: " << config.server_name << '\n';
-	std::cout << "info: " << config.info << '\n';
-	std::cout << "admin name: "  << config.admin_name << '\n';
-	std::cout << "admin nickname: " << config.admin_nickname << '\n';
-	std::cout << "admin email: " << config.admin_email << '\n';
+	std::cout << "Server name: " << config.server_name << '\n';
+	std::cout << "Info: " << config.info << '\n';
+	std::cout << "Admin name: "  << config.admin_name << '\n';
+	std::cout << "Admin nickname: " << config.admin_nickname << '\n';
+	std::cout << "Admin email: " << config.admin_email << '\n';
 	std::cout << "Operator password doesn't show up due to security reasons\n";
-	std::cout << "maximum channels on server: " << config.max_channels << '\n';
+	std::cout << "Maximum channels on server: " << config.max_channels << '\n';
 	std::cout << "---------------------------------------------------------\n";
 	std::cout << RESET << std::endl;
 }
 
-void replyError(int user_fd, int reply, std::string arg)
+void replyError(int user_fd, int reply, const std::string& arg)
 {
 	std::string message = intToString(reply) + ' ' + arg;
 
@@ -155,7 +155,17 @@ void replyError(int user_fd, int reply, std::string arg)
 	case ERR_UNKNOWNCOMMAND:
 		message += " :Unknown command";
 		break;
+	case ERR_NOORIGIN:
+		message += " :No origin specified";
+	default:
+		break;
 	}
-	message += "\r\n";
-	send(user_fd, message.c_str(), message.size(), 0);
+
+	sendAnswer(user_fd, message);
+}
+
+void sendAnswer(int fd, std::string& msg)
+{
+	msg += "\r\n";
+	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
 }

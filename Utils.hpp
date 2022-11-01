@@ -19,6 +19,7 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <unistd.h>
 
 #include "numeric_replies.hpp"
 
@@ -29,8 +30,10 @@
 #endif
 
 #define RED "\033[31m"
-#define GREEN "\033[32m"
+#define GREEN "\033[3;32m"
+#define YELLOW "\033[3;33m"
 #define BLUE "\033[34m"
+#define CYAN "\033[36m"
 #define GRAY "\033[90m"
 #define RESET "\033[0m"
 
@@ -64,6 +67,7 @@ void printConfigFileFields(const config_file& config);
 
 std::queue<std::string> split(const std::string &str, char sep);
 
-void replyError(int user_fd, int reply, std::string arg);
+void replyError(int user_fd, int reply, const std::string& arg);
+void sendAnswer(int fd, std::string& msg);
 
 #endif //UTILS_HPP

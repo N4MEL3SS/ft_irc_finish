@@ -49,7 +49,8 @@ void Message::readMessage(int fd, User& user)
 	_message_queue = split(_message_raw, '\n');
 
 	// TODO: дебаг. удалить после тестирования
-	std::cout << "Input from client:\n" << _message_raw << std::endl;
+	std::cout << YELLOW << "Input from client: " << RESET;
+	std::cout << CYAN << _message_raw << RESET << std::endl;
 }
 
 void Message::parsingMessage()
@@ -93,7 +94,23 @@ void Message::parsingMessage()
 	if (_parameters.front()[0] == ':')
 		_parameters.front().replace(0, 1, "");
 
+	joinString(this->_postfix);
+	joinString(this->_parameters);
+
 	_message_queue.pop();
+}
+
+void Message::joinString(std::vector<std::string>& msg)
+{
+	if (msg.size() > 1)
+	{
+		for (int i = 0; i < msg.size() - 1; i++)
+			_join_msg += msg[i] + " ";
+
+		_join_msg += msg.back();
+		msg.push_back(_join_msg);
+		_join_msg.clear();
+	}
 }
 
 const std::string	&Message::getCommand() const { return _command; }

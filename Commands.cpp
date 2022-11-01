@@ -8,6 +8,25 @@ void Server::initCommands()
 	_commands_map["QUIT"] = &Server::quitCmd;
 
 	_commands_map["PRIVMSG"] = &Server::privmsgCmd;
+
+	_commands_map["PING"] = &Server::pingCmd;
+//	_commands_map["PONG"] = &Server::privmsgCmd;
+
+//	_commands_map["JOIN"] = &Server::
+//	_commands_map["INVITE"] = &Server::
+//	_commands_map["PART"] = &Server::
+//	_commands_map["WHO"] = &Server::
+//
+//	_commands_map["KICK"] = &Server::
+//	_commands_map["TOPIC"] = &Server::
+//	_commands_map["LIST"] = &Server::
+//
+//	_commands_map["OPER"] = &Server::
+//	_commands_map["KILL"] = &Server::
+//	_commands_map["REHASH"] = &Server::
+//	_commands_map["RESTART"] = &Server::
+//
+//	_commands_map["NAMES"] = &Server::
 }
 
 int Server::passCmd(User& user, Message& msg)
@@ -16,7 +35,7 @@ int Server::passCmd(User& user, Message& msg)
 		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (user.getRegistrationStatus())
 		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
-	else if (msg.getParams()[0] != _server_password)
+	else if (msg.getParams().back() != _server_password)
 		return DISCONNECT;
 
 	return 0;
@@ -30,7 +49,7 @@ int Server::userCmd(User& user, Message& msg)
 		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
 	else
 	{
-		user.setRealName(msg.getParams()[0]);
+		user.setRealName(msg.getParams().back());
 		user.setUserName(msg.getPostfix()[0]);
 	}
 
@@ -55,6 +74,7 @@ int Server::checkConnection(User& user)
 	if (!user.getNickName().empty() && !user.getUserName().empty() && !user.getRegistrationStatus())
 	{
 		user.setRegistrationStatus(true);
+		_users_nick_map[user.getNickName()] = &user;
 		sendMOTD(user);
 	}
 	else
@@ -68,15 +88,13 @@ void Server::sendMOTD(User& user)
 	std::string message;
 
 	message = ":server 375 " + user.getNickName() + " :- Message of the day -\r\n";
-//	send(user.getUserFD(), message.c_str(), message.size(), 0);
 	message += ":server 372 " + user.getNickName() + " :- welcome to server\r\n";
-//	send(user.getUserFD(), message.c_str(), message.size(), 0);
 	message += ":server 376 " + user.getNickName() + " :End of /MOTD command\r\n";
-//	send(user.getUserFD(), message.c_str(), message.size(), 0);
-	message += "001 "+ user.getNickName() + " :Welcome to IRChat, " + user.getNickName() + "!" + user.getUserName() + "@127.0.0.1\r\n";
-	send(user.getUserFD(), message.c_str(), message.size(), 0);
+	message += "001 "+ user.getNickName() + " :Welcome to IRChat, " + user.getNickName() + "!" + user.getUserName() + "@127.0.0.1";
+	sendAnswer(user.getUserFD(), message);
 
-	std::cout << message;
+	std::cout << YELLOW << "Send to client\n" << RESET;
+	std::cout << BLUE << message << RESET << std::endl;
 }
 
 int Server::quitCmd(User& user, Message& msg)
@@ -85,6 +103,21 @@ int Server::quitCmd(User& user, Message& msg)
 	{
 		user.setConnectionStatus(false);
 		return DISCONNECT;
+	}
+
+	return 0;
+}
+
+int Server::pingCmd(User& user, Message& msg)
+{
+	if (msg.getParams().empty())
+		replyError(user.getUserFD(), ERR_NOORIGIN, "");
+	else
+	{
+		std::string answer;
+		answer = ":" + _config.server_name + " PONG :" + msg.getParams()[0] + "/r/n";
+
+		sendAnswer(user.getUserFD(), answer);
 	}
 
 	return 0;

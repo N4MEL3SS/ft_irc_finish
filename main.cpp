@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 	{
 		MyServer.acceptConnection();
 		MyServer.messageProcessing();
+		MyServer.deleteUsersFromServer();
 	}
 
 	return 0;
