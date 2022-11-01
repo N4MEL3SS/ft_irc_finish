@@ -17,16 +17,16 @@ class Server
 	class Message clientMessage;
 
 	std::vector<struct pollfd> _users_pollfd;
+
 	// Основные настройки сервера
 	std::string _server_password;
 	sockaddr_in _address;
 	int			_socket;
 	int			_port;
-	int			_current_connections;
 
+	// Переменные для хранения конфига сервера
 	std::string _path_to_config_file;
 	config_file _config;
-
 
 	// Файловый дескриптор админа
 	int admin_server_fd;

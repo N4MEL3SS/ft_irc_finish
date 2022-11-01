@@ -50,8 +50,6 @@ void Server::initServer()
 void Server::acceptConnection()
 {
 	size_t address_size = sizeof(_address);
-	// TODO: Зачем я это добавил???
-//	_current_connections = poll(_users_pollfd.data(), _users_pollfd.size(), 0);
 
 	int new_connection = accept(_socket, (sockaddr*)&_address, (socklen_t *)&address_size);
 	if (new_connection > 0)
@@ -70,9 +68,9 @@ void Server::acceptConnection()
 
 void Server::messageProcessing()
 {
-	_current_connections = poll(_users_pollfd.data(), _users_pollfd.size(), 0);
+	int connections = poll(_users_pollfd.data(), _users_pollfd.size(), 0);
 
-	if (_current_connections > 0)
+	if (connections > 0)
 	{
 		int fd_count = static_cast<int>(_users_pollfd.size());
 		for (int i = 0; i < fd_count; i++)
@@ -134,7 +132,7 @@ void Server::deleteUsersFromServer()
 int Server::findPollfd(int fd)
 {
 	int i = 0;
-	
+
 	while (i < _users_pollfd.size() && _users_pollfd[i].fd != fd)
 		i++;
 
