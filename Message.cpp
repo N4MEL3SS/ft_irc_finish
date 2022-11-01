@@ -80,7 +80,6 @@ void Message::parsingMessage()
 		split_msg.pop();
 	}
 
-	// TODO: флаг - это костыль?
 	while (!split_msg.empty())
 	{
 		if (postfix_flag && split_msg.front()[0] != ':')
@@ -104,11 +103,11 @@ void Message::parsingMessage()
 
 void Message::joinString(std::vector<std::string>& dst, std::string& src)
 {
-	if (dst.size() > 1)
+	for (int i = 0; i < dst.size(); i++)
 	{
-		for (int i = 0; i < dst.size() - 1; i++)
-			src += dst[i] + " ";
-		src += dst.back();
+		if (!src.empty())
+			src += " ";
+		src += dst[i];
 	}
 }
 
@@ -124,5 +123,7 @@ void Message::clearData()
 {
 	_prefix.clear();
 	_postfix.clear();
+	_postfix_str.clear();
 	_parameters.clear();
+	_parameters_str.clear();
 }
