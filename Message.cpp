@@ -48,8 +48,10 @@ void Message::readMessage(int fd, User& user)
 
 	_message_queue = split(_message_raw, '\n');
 
-	// TODO: дебаг. удалить после тестирования
-	std::cout << YELLOW << "Input from client: " << RESET;
+	if (std::count(_message_raw.begin(), _message_raw.end(), '\n') > 1)
+		std::cout << YELLOW << "Input from client\n" << RESET;
+	else
+		std::cout << YELLOW << "Input from client: " << RESET;
 	std::cout << CYAN << _message_raw << RESET << std::endl;
 }
 

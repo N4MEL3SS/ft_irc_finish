@@ -169,6 +169,9 @@ void sendAnswer(int fd, std::string& msg)
 	msg += "\r\n";
 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
 
-	std::cout << YELLOW << "Send to client\n" << RESET;
+	if (std::count(msg.begin(), msg.end(), '\n') > 1)
+		std::cout << YELLOW << "Send to client\n" << RESET;
+	else
+		std::cout << YELLOW << "Send to client: " << RESET;
 	std::cout << BLUE << msg << RESET << std::endl;
 }
