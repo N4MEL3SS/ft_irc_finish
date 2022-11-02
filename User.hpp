@@ -24,7 +24,8 @@ class User
 	bool _is_connected;
 	// Зарегистрирован ли пользователь
 	bool _is_registered;
-
+	
+	bool _is_irc_operator;
 	User();
 
  public:
@@ -34,6 +35,7 @@ class User
 	// Getter
 	bool getRegistrationStatus() const;
 	bool getConnectionStatus() const;
+	bool getIrcOperatorStatus() const;
 
 	bool getIsPartialMessage() const;
 	std::string getPartialMessage() const;
@@ -47,6 +49,7 @@ class User
 
 	void setIsPartialMessage(bool condition);
 	void setPartialMessage(const std::string& message);
+	void setIrcOperatorStatus();
 
 	void setConnectionStatus(bool condition);
 	void setRegistrationStatus(bool condition);

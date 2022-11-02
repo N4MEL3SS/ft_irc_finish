@@ -86,6 +86,14 @@ class Server
 	std::string createAnswerString(User& user, Message& msg);
 
 	int whoCmd(User& user, Message& chan);
+
+
+	/*IrcOperatorCommands*/
+	bool checkIrcOperatorStatus(User &user);
+	int operCmd(User &user, Message &message);
+	int restartCmd(User &user, Message &message);
+	int killCmd(User &user, Message &message);
+	int rehashCmd(User &user, Message &message);
 };
 
 #endif //SERVER_HPP
