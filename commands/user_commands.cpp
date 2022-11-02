@@ -15,17 +15,19 @@ int Server::privmsgCmd(User& user, Message& msg)
 
 	for (int i = 0; i < msg.getPostfix().size(); i++)
 	{
+		std::string to_client;
 		if (msg.getPostfix()[i][0] == '#' || msg.getPostfix()[i][0] == '&')
 		{
-
+			to_client = ":" + user.getNickName() + "!" + user.getUserName() + "@localhost " + \
+				msg.getCommand() + " " + msg.getPostfix()[i] + " :" + msg.getParamsStr();
+			sendAnswer(_users_fd_map[user.getUserFD()]->getUserFD(), to_client);
 		}
 		else if (_users_nick_map.find(msg.getPostfix()[i]) != _users_nick_map.end())
 		{
-			std::string to_client;
-
 			// TODO: Вынести в отдельную функцию
 			to_client = ":" + user.getNickName() + "!" + user.getUserName() + "@localhost " + \
 				msg.getCommand() + " " + msg.getPostfix()[i] + " :" + msg.getParamsStr();
+			// TODO: добавить цикл
 			sendAnswer(_users_nick_map[msg.getPostfix()[i]]->getUserFD(), to_client);
 		}
 		else
