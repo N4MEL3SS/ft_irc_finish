@@ -73,6 +73,7 @@ void printConfigFileFields(const config_file& config);
 std::queue<std::string> split(const std::string &str, char sep);
 
 int replyError(int user_fd, int reply, const std::string& arg);
+void sendReply(int user_fd, int reply, const std::string& arg = "", const std::string& arg2 = "");
 void sendAnswer(int fd, std::string& msg);
 
 #endif //UTILS_HPP
