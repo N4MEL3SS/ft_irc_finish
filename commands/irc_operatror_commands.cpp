@@ -75,9 +75,8 @@ int Server::operCmd(User &user, Message &message){
 		replyError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 		return (-1);
 	}
-	std::string msg = "381 :You are now an IRC operator";
     user.setIrcOperatorStatus();
-	sendAnswer(user.getUserFD(), msg);
+    sendReply(user.getUserFD(), RPL_YOUREOPER);
 	return (0);
 }
 
