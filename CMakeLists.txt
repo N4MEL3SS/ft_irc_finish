@@ -14,5 +14,7 @@ set(MESSAGE Message.cpp Message.hpp)
 set(COMMANDS commands/registration_commands.cpp commands/channel_commands.cpp commands/other_commands.cpp commands/user_commands.cpp commands/irc_operatror_commands.cpp)
 set(UTILS Utils.cpp Utils.hpp)
 set(OTHER main.cpp numeric_replies.hpp commands/init_commands.cpp)
+set(BOT Bot/Client.cpp Bot/Client.hpp Bot/main.cpp)
 
 add_executable(ft_irc ${SERVER}  ${USER} ${CHANNEL} ${MESSAGE} ${COMMANDS} ${UTILS} ${OTHER})
+add_executable(bot ${BOT})
