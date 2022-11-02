@@ -9,11 +9,15 @@ class Channel
  private:
 	std::string _channel_name;
 	std::string _channel_password;
+
 	std::map<int, std::string> _channel_user_fd_map;
 	std::map<std::string, User *> _channel_user_nick_map;
+
 	std::vector<std::string> _channel_users;
 	std::vector<std::string> _channel_operators;
 	std::vector<std::string> _channel_ban_list;
+	std::vector<bool> _channel_mode;
+
  public:
 	Channel(const std::string& name);
 	Channel(const std::string& name, const std::string& pass);

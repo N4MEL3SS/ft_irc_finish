@@ -1,7 +1,10 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string& name) : _channel_name(name) {}
-Channel::Channel(const std::string& name, const std::string& pass) : _channel_name(name), _channel_password(pass) {}
+//Channel::Channel(const std::string& name) : _channel_name(name) {}
+Channel::Channel(const std::string& name, const std::string& pass) : _channel_name(name), _channel_password(pass)
+{
+
+}
 
 Channel::~Channel() {}
 

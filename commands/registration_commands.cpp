@@ -27,7 +27,7 @@ int Server::userCmd(User& user, Message& msg)
 		    user.setUserName(msg.getPostfix()[0]);
 	}
 
-	return 0;
+	return checkConnection(user);
 }
 
 // TODO: Добавить верификацию ника
@@ -52,8 +52,8 @@ int Server::checkConnection(User& user)
 		_users_nick_map[user.getNickName()] = &user;
 		sendMOTD(user);
 	}
-	else
-		return DISCONNECT;
+//	else
+//		return DISCONNECT;
 
 	return 0;
 }
