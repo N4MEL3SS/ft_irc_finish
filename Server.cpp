@@ -4,7 +4,7 @@ Server::Server(int port, const std::string& password, const std::string& path_to
 		_server_password(password), _port(port), _path_to_config_file(path_to_conf)
 {
 	_config = parseConfigFile(path_to_conf);
-//	printConfigFileFields(_config);
+//
 }
 
 Server::~Server()
@@ -46,6 +46,7 @@ void Server::initServer()
 	}
 
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
+    printConfigFileFields(_config);
 }
 
 void Server::acceptConnection()

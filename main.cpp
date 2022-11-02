@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
 	}
 
 	Server MyServer(port, argv[2]);
-	printConfigFileFields(MyServer.getServerConfig());
 	MyServer.initServer();
 	MyServer.initCommands();
 

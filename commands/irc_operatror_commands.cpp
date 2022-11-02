@@ -12,8 +12,12 @@ bool Server::checkIrcOperatorStatus(User &user){
 int Server::restartCmd(User &user, Message &message){
 	(void) message;
 	if (checkIrcOperatorStatus(user)){
+        for (int i = 0; i < _users_pollfd.size(); i++){
+            _delete_users.push_back(_users_pollfd[i].fd);
+        }
 		deleteUsersFromServer();
-		close(_socket);
+		if (close(_socket))
+            std::cout << "error" << std::endl;
 		initServer();
 	}
 	return 0;
@@ -33,12 +37,11 @@ int Server::rehashCmd(User &user, Message &message){
 
 int Server::killCmd(User &user, Message &message){
 	if (checkIrcOperatorStatus(user)){
-		std::queue<std::string> splitted = split(message.getCommand(), ' ');
-		if (splitted.size() < 3){
+		std::vector<std::string> splitted = message.getParams();
+		if (splitted.size() < 2){
 			replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, "");
 			return (-1);
 		}
-		splitted.pop();
 		if (_users_nick_map.find(splitted.front()) == _users_nick_map.end())
 		{
 			replyError(user.getUserFD(), ERR_NOSUCHNICK, splitted.front());
@@ -46,14 +49,15 @@ int Server::killCmd(User &user, Message &message){
 		}
 		User userToKill = *_users_nick_map[splitted.front()];
 		int fd_to_kill = userToKill.getUserFD();
-		delete _users_nick_map[splitted.front()];
+/*		delete _users_nick_map[splitted.front()];
 		_users_nick_map.erase(splitted.front());
-		_users_fd_map.erase(fd_to_kill);
+		_users_fd_map.erase(fd_to_kill);*/
 		std::string msg = "";
-		splitted.pop();
+        _delete_users.push_back(fd_to_kill);
+        splitted.erase(splitted.begin());
 		while (!splitted.empty()){
-			msg += splitted.front();
-			splitted.pop();
+			msg += splitted.front() + " ";
+            splitted.erase(splitted.begin());
 		}
 		sendAnswer(fd_to_kill, msg);
 		close(fd_to_kill);
