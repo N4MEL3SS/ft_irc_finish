@@ -4,12 +4,15 @@ Server::Server(int port, const std::string& password, const std::string& path_to
 		_server_password(password), _port(port), _path_to_config_file(path_to_conf)
 {
 	_config = parseConfigFile(path_to_conf);
-//
 }
 
 Server::~Server()
 {
-	for (int i = 0; i < static_cast<int>(_users_fd_map.size()); i++)
+	std::map<std::string, Channel *>::iterator it = _channels_map.begin();
+	for (; it != _channels_map.end(); it++)
+		delete it->second;
+
+	for (size_t i = 0; i < _users_fd_map.size(); i++)
 	{
 		// TODO: Необходимо ли удалять запись из словаря??? Проверить на утечки
 		close(_users_pollfd[i].fd);
@@ -104,8 +107,10 @@ void Server::messageHandler(int user_fd)
 			if (ret == DISCONNECT)
 				_delete_users.push_back(user_fd);
 		}
-//		else
-//			replyError(user_fd, ERR_UNKNOWNCOMMAND, cmd);
+		else
+		{
+			std::cout << "ERROR: " + cmd + ": Unknown command" << std::endl;
+		}
 	}
 }
 

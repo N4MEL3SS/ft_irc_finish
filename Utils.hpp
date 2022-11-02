@@ -37,6 +37,11 @@
 #define GRAY "\033[90m"
 #define RESET "\033[0m"
 
+#define CHANNEL_MODE_O_INDEX 0 // Флаг оператора
+#define CHANNEL_MODE_K_INDEX 1 // Флаг пароля
+#define CHANNEL_MODE_L_INDEX 2 // Флаг количества пользователей
+#define CHANNEL_MODE_T_INDEX 3 // Флаг топика
+
 struct config_file
 {
 	std::string server_name;
