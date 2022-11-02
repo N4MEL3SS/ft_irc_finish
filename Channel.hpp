@@ -19,7 +19,7 @@ class Channel
 	std::vector<bool> _channel_mode;
 
  public:
-	Channel(const std::string& name);
+//	Channel(const std::string& name);
 	Channel(const std::string& name, const std::string& pass);
 	~Channel();
 

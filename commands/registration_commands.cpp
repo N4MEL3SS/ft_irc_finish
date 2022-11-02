@@ -21,17 +21,16 @@ int Server::userCmd(User& user, Message& msg)
 	else
 	{
 		user.setRealName(msg.getParamsStr());
-        if (msg.getPostfix().empty())
-		    user.setUserName(msg.getParamsStr());
-        else
-		    user.setUserName(msg.getPostfix()[0]);
+		if (msg.getPostfix().empty())
+			user.setUserName(msg.getParamsStr());
+		else
+			user.setUserName(msg.getPostfix()[0]);
 	}
 
 	return checkConnection(user);
 }
 
-// TODO: Добавить верификацию ника
-// TODO: Считать ли вариант NICK user test валидным?
+// TODO: Добавить верификацию ника?
 int Server::nickCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
@@ -52,8 +51,6 @@ int Server::checkConnection(User& user)
 		_users_nick_map[user.getNickName()] = &user;
 		sendMOTD(user);
 	}
-//	else
-//		return DISCONNECT;
 
 	return 0;
 }
