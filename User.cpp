@@ -20,6 +20,8 @@ bool User::getIrcOperatorStatus() const { return this->_is_irc_operator; }
 bool User::getIsPartialMessage() const { return this->_is_partial_message; }
 std::string User::getPartialMessage() const { return this->_partial_message; }
 
+std::map<std::string, char> User::getUserChannelMode() const {return this->_user_channel_mode; }
+
 int User::getUserFD() const { return this->_user_fd; }
 std::string User::getNickName() { return this->_nickname; }
 std::string User::getUserName() { return this->_username; }

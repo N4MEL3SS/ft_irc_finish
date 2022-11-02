@@ -75,10 +75,27 @@ int Server::checkChannelsError(User& user, Message &msg)
 //:ircserv 353 levensta1 #ratata :levensta2!levensta2@localhost
 //:ircserv 366 levensta1 #ratata :End of /NAMES list
 
-int Server::whoCmd(User& user, Message &chan)
+int Server::whoCmd(User& user, Message &msg)
 {
 //	std::string g = ":IRCat 315 wabathur wabathur :End of /WHO list";
 //	sendAnswer(user.getUserFD(), g);
 
 	return 0;
+}
+
+int Server::modeCmd(User& user, Message &msg)
+{
+	// TODO: Проверка на канал
+	if (msg.getParams().size() > 1 && _channels_map.find(msg.getParams()[0]) != _channels_map.end())
+	{
+		Channel& chan = *_channels_map[msg.getParams()[0]];
+		if (msg.getParams()[1][0] == '+')
+		{
+			for (int i = 1; i < msg.getParams().size(); i++)
+			{
+				if (msg.getParams()[1][i] == 'o')
+					user.getUserChannelMode()[]
+			}
+		}
+	}
 }

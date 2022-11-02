@@ -12,6 +12,7 @@ class User
 	std::string _username;
 	std::string _realname;
 
+	std::map<std::string, char> _user_channel_mode;
 	// Файловый дескриптор пользователя
 	int _user_fd;
 
@@ -57,6 +58,8 @@ class User
 	void setNickName(const std::string& name);
 	void setUserName(const std::string& name);
 	void setRealName(const std::string& name);
+
+	std::map<std::string, char> getUserChannelMode() const;
 };
 
 #endif //USER_HPP

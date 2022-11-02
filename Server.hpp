@@ -94,6 +94,8 @@ class Server
 	int restartCmd(User &user, Message &message);
 	int killCmd(User &user, Message &message);
 	int rehashCmd(User &user, Message &message);
+
+	int modeCmd(User& user, Message& msg);
 };
 
 #endif //SERVER_HPP

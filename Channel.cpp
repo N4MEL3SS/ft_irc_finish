@@ -3,7 +3,7 @@
 //Channel::Channel(const std::string& name) : _channel_name(name) {}
 Channel::Channel(const std::string& name, const std::string& pass) : _channel_name(name), _channel_password(pass)
 {
-
+	_channel_mode.assign(CHANNEL_MODE_SIZE, false);
 }
 
 Channel::~Channel() {}
@@ -16,3 +16,5 @@ std::string& Channel::getChannelPassword()
 {
 	return this->_channel_password;
 }
+
+void Channel::setChannelMode(int i,bool status) { _channel_mode[i] = status; }

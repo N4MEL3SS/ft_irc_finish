@@ -16,6 +16,7 @@ void Server::initCommands()
 //	_commands_map["PONG"] = &Server::privmsgCmd;
 
 	_commands_map["JOIN"] = &Server::joinCmd;
+	_commands_map["MODE"] = &Server::modeCmd;
 //	_commands_map["PART"] = &Server::
 	_commands_map["WHO"] = &Server::whoCmd;
 //
