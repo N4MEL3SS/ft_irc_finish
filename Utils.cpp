@@ -168,17 +168,17 @@ int replyError(int user_fd, int reply, const std::string& arg)
 	return 1;
 }
 
-void sendAnswer(int fd, std::string msg)
-{
-	msg += "\r\n";
-	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
+// void sendAnswer(int fd, std::string msg)
+// {
+// 	msg += "\r\n";
+// 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
 
-	if (std::count(msg.begin(), msg.end(), '\n') > 1)
-		std::cout << YELLOW << "Send to client\n" << RESET;
-	else
-		std::cout << YELLOW << "Send to client: " << RESET;
-	std::cout << BLUE << msg << RESET << std::endl;
-}
+// 	if (std::count(msg.begin(), msg.end(), '\n') > 1)
+// 		std::cout << YELLOW << "Send to client\n" << RESET;
+// 	else
+// 		std::cout << YELLOW << "Send to client: " << RESET;
+// 	std::cout << BLUE << msg << RESET << std::endl;
+// }
 
 void sendAnswer(int fd, std::string &msg)
 {
