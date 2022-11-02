@@ -10,7 +10,7 @@ void Server::initCommands()
 	_commands_map["ISON"] = &Server::isonCmd;
 
 	_commands_map["PRIVMSG"] = &Server::privmsgCmd;
-//	_commands_map["NOTICE"] = &Server::
+	_commands_map["NOTICE"] = &Server::privmsgCmd;
 
 	_commands_map["PING"] = &Server::pingCmd;
 //	_commands_map["PONG"] = &Server::privmsgCmd;
