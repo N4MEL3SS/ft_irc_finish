@@ -21,7 +21,10 @@ int Server::userCmd(User& user, Message& msg)
 	else
 	{
 		user.setRealName(msg.getParamsStr());
-		user.setUserName(msg.getPostfix()[0]);
+        if (msg.getPostfix().empty())
+		    user.setUserName(msg.getParamsStr());
+        else
+		    user.setUserName(msg.getPostfix()[0]);
 	}
 
 	return 0;

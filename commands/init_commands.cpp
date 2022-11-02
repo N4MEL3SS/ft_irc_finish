@@ -24,10 +24,10 @@ void Server::initCommands()
 //	_commands_map["TOPIC"] = &Server::
 //	_commands_map["LIST"] = &Server::
 //
-//	_commands_map["OPER"] = &Server::
-//	_commands_map["KILL"] = &Server::
-//	_commands_map["REHASH"] = &Server::
-//	_commands_map["RESTART"] = &Server::
+	_commands_map["OPER"] = &Server::operCmd;
+	_commands_map["KILL"] = &Server::killCmd;
+	_commands_map["REHASH"] = &Server::rehashCmd;
+	_commands_map["RESTART"] = &Server::restartCmd;
 //
 //	_commands_map["NAMES"] = &Server::
 }

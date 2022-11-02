@@ -62,20 +62,17 @@ int Server::killCmd(User &user, Message &message){
 }
 
 int Server::operCmd(User &user, Message &message){
-	std::queue<std::string> splitted = split(message.getCommand(), ' ');
-	if (splitted.size() != 2){
-		if (splitted.size() < 2)
-			replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, "");
-		else
-			replyError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
+	std::string password = message.getParamsStr();
+	if (!password.size()){
+		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, "");
 		return (-1);
 	}
-	splitted.pop();
-	if (splitted.front().compare(_config.operator_password)){
+	if (password.compare(_config.operator_password)){
 		replyError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 		return (-1);
 	}
 	std::string msg = "381 :You are now an IRC operator";
+    user.setIrcOperatorStatus();
 	sendAnswer(user.getUserFD(), msg);
 	return (0);
 }
