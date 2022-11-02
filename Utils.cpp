@@ -192,7 +192,7 @@ void sendAnswer(int fd, std::string &msg)
 	std::cout << BLUE << msg << RESET << std::endl;
 }
 
-void sendReply(int user_fd, int reply, const std::string& arg = "", const std::string& arg2 = "")
+void sendReply(int user_fd, int reply, const std::string& arg, const std::string& arg2)
 {
     std::string message = intToString(reply) + ' ' + arg;
 
@@ -215,5 +215,4 @@ void sendReply(int user_fd, int reply, const std::string& arg = "", const std::s
             break;
     }
     sendAnswer(user_fd, message);
-
 }
