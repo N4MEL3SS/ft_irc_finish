@@ -26,22 +26,22 @@ int Server::joinCmd(User& user, Message& msg)
 			else if (keys.front() == _channels_map[chans.front()]->getChannelPassword())
 				addUser(user, *_channels_map[chans.front()]);
 			else
-				replyError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
+				sendError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 		}
 
 
-		std::string check = createAnswerString(user, msg);
+		createAnswer(user, msg, chans.front());
 //		std::string check =
-		sendAnswer(user.getUserFD(), check);
+		sendToClient(user.getUserFD(), msg.getAnswerForServer());
 
 //		std::string y = ":" + _config.server_name + " 331 wabathur #asdfg :No topic is set";
 //		std::string y = "331 #asdfg :topic";
-//		sendAnswer(user.getUserFD(), y);
+//		sendToClient(user.getUserFD(), y);
 
 		std::string t = ":" + _config.server_name + " 353 wabathur = #asdfg :@wabathur";
-		sendAnswer(user.getUserFD(), t);
+		sendToClient(user.getUserFD(), t);
 		t = ":" + _config.server_name + " 366 wabathur #asdfg :End of /NAMES list";
-		sendAnswer(user.getUserFD(), t);
+		sendToClient(user.getUserFD(), t);
 
 		chans.pop();
 		if (!keys.empty())
@@ -64,9 +64,9 @@ void Server::addUser(User& user, Channel &chan)
 int Server::checkChannelsError(User& user, Message &msg)
 {
 	if (msg.getParams().empty() && msg.getPostfix().empty())
-		return replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (_channels_map.size() >= _config.max_channels)
-		return replyError(user.getUserFD(), ERR_TOOMANYCHANNELS, intToString(_channels_map.size()));
+		return sendError(user.getUserFD(), ERR_TOOMANYCHANNELS, intToString(_channels_map.size()));
 
 	return 0;
 }
@@ -78,7 +78,7 @@ int Server::checkChannelsError(User& user, Message &msg)
 int Server::whoCmd(User& user, Message &msg)
 {
 //	std::string g = ":IRCat 315 wabathur wabathur :End of /WHO list";
-//	sendAnswer(user.getUserFD(), g);
+//	sendToClient(user.getUserFD(), g);
 
 	return 0;
 }
@@ -94,8 +94,12 @@ int Server::modeCmd(User& user, Message &msg)
 			for (int i = 1; i < msg.getParams().size(); i++)
 			{
 				if (msg.getParams()[1][i] == 'o')
-					user.getUserChannelMode()[]
+				{
+//					user.getUserChannelMode()[]
+				}
 			}
 		}
 	}
+
+	return 0;
 }

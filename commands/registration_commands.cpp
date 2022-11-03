@@ -3,9 +3,9 @@
 int Server::passCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
-		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (user.getRegistrationStatus())
-		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
+		sendError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
 	else if (msg.getParamsStr() != _server_password)
 		return DISCONNECT;
 
@@ -15,9 +15,9 @@ int Server::passCmd(User& user, Message& msg)
 int Server::userCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty() && msg.getPostfix().empty())
-		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (user.getRegistrationStatus())
-		replyError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
+		sendError(user.getUserFD(), ERR_ALREADYREGISTRED, "");
 	else
 	{
 		user.setRealName(msg.getParamsStr());
@@ -34,9 +34,9 @@ int Server::userCmd(User& user, Message& msg)
 int Server::nickCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
-		replyError(user.getUserFD(), ERR_NONICKNAMEGIVEN, "");
+		sendError(user.getUserFD(), ERR_NONICKNAMEGIVEN, "");
 	else if (_users_nick_map.find(msg.getParamsStr()) != _users_nick_map.end())
-		replyError(user.getUserFD(), ERR_NICKNAMEINUSE, msg.getParamsStr());
+		sendError(user.getUserFD(), ERR_NICKNAMEINUSE, msg.getParamsStr());
 	else
 		user.setNickName(msg.getParamsStr());
 
@@ -47,6 +47,7 @@ int Server::checkConnection(User& user)
 {
 	if (!user.getNickName().empty() && !user.getUserName().empty() && !user.getRegistrationStatus())
 	{
+		user.setFullName(user.getNickName(), user.getUserName());
 		user.setRegistrationStatus(true);
 		_users_nick_map[user.getNickName()] = &user;
 		sendMOTD(user);
@@ -64,5 +65,5 @@ void Server::sendMOTD(User& user)
 	message += ":server 376 " + user.getNickName() + " :End of /MOTD command\r\n";
 	message += "001 "+ user.getNickName() + " :Welcome to IRChat, " + user.getNickName() + "!" + user.getUserName() + "@127.0.0.1";
 
-	sendAnswer(user.getUserFD(), message);
+	sendToClient(user.getUserFD(), message);
 }

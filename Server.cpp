@@ -4,17 +4,21 @@ Server::Server(int port, const std::string& password, const std::string& path_to
 		_server_password(password), _port(port), _path_to_config_file(path_to_conf)
 {
 	_config = parseConfigFile(path_to_conf);
+	_admin_server_fd = -1;
+	_socket = -1;
 }
 
 Server::~Server()
 {
-	std::map<std::string, Channel *>::iterator it = _channels_map.begin();
+	// TODO: Проверить на утечки
+	std::map<std::string, Channel*>::iterator it;
+	it = _channels_map.begin();
+
 	for (; it != _channels_map.end(); it++)
 		delete it->second;
 
 	for (size_t i = 0; i < _users_fd_map.size(); i++)
 	{
-		// TODO: Необходимо ли удалять запись из словаря??? Проверить на утечки
 		close(_users_pollfd[i].fd);
 		delete _users_fd_map[_users_pollfd[i].fd];
 	}
@@ -49,14 +53,14 @@ void Server::initServer()
 	}
 
 	fcntl(_socket, F_SETFL, O_NONBLOCK);
-    printConfigFileFields(_config);
+	printConfigFileFields(_config);
 }
 
 void Server::acceptConnection()
 {
 	size_t address_size = sizeof(_address);
-
 	int new_connection = accept(_socket, (sockaddr*)&_address, (socklen_t *)&address_size);
+
 	if (new_connection > 0)
 	{
 		struct pollfd pfd = {};
@@ -67,6 +71,7 @@ void Server::acceptConnection()
 		_users_pollfd.push_back(pfd);
 		_users_fd_map[pfd.fd] = new User(pfd.fd);
 
+		// TODO: Перенести в отдельную функцию по типу ReplyError
 		std::cout << GREEN << "New user connected fd: " << RESET << pfd.fd << '\n' << std::endl;
 	}
 }
@@ -77,8 +82,7 @@ void Server::messageProcessing()
 
 	if (connections > 0)
 	{
-		int fd_count = static_cast<int>(_users_pollfd.size());
-		for (int i = 0; i < fd_count; i++)
+		for (size_t i = 0; i < _users_pollfd.size(); i++)
 		{
 			if (_users_pollfd[i].revents & POLLIN && _users_fd_map[_users_pollfd[i].fd]->getConnectionStatus())
 				messageHandler(_users_pollfd[i].fd);
@@ -99,7 +103,7 @@ void Server::messageHandler(int user_fd)
 		if (!_users_fd_map[user_fd]->getRegistrationStatus() && cmd != "PASS" && cmd != "USER" \
 			&& cmd != "NICK" && cmd != "QUIT")
 		{
-			replyError(user_fd, ERR_NOTREGISTERED, "");
+			sendError(user_fd, ERR_NOTREGISTERED, "");
 		}
 		else if (_commands_map.find(cmd) != _commands_map.end())
 		{
@@ -108,9 +112,8 @@ void Server::messageHandler(int user_fd)
 				_delete_users.push_back(user_fd);
 		}
 		else
-		{
+			// TODO: Перенести в отдельную функцию по типу ReplyError
 			std::cout << "ERROR: " + cmd + ": Unknown command" << std::endl;
-		}
 	}
 }
 
@@ -118,7 +121,7 @@ void Server::deleteUsersFromServer()
 {
 	if (!_delete_users.empty())
 	{
-		for (int i = 0; i < _delete_users.size(); i++)
+		for (size_t i = 0; i < _delete_users.size(); i++)
 		{
 			std::string nick = _users_fd_map[_delete_users[i]]->getNickName();
 
@@ -134,6 +137,11 @@ void Server::deleteUsersFromServer()
 		}
 		_delete_users.clear();
 	}
+}
+
+void Server::deleteEmptyChannels()
+{
+
 }
 
 int Server::findPollfd(int fd)

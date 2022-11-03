@@ -19,6 +19,8 @@ class Message
 	std::string 					_message_raw;
 	std::queue<std::string>			_message_queue;
 
+	std::string						_answer_for_client;
+
  public:
 	Message();
 	~Message();
@@ -37,6 +39,9 @@ class Message
 	const std::string				&getPostfixStr() const;
 	const std::vector<std::string>	&getParams() const;
 	const std::string				&getParamsStr() const;
+	std::string						&getAnswerForServer();
+
+	void setAnswerForServer(const std::string& answer);
 };
 
 #endif //MESSAGE_HPP

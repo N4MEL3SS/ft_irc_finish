@@ -5,14 +5,13 @@ Message::~Message() {}
 
 void Message::readMessage(int fd, User& user)
 {
+	_message_raw.clear();
 	if (user.getIsPartialMessage())
 	{
 		_message_raw += user.getPartialMessage();
 		user.getPartialMessage().clear();
 		user.setIsPartialMessage(false);
 	}
-	else
-		_message_raw = "";
 
 	size_t bytesRead;
 	char buff[BUFF_SIZE];
@@ -35,8 +34,7 @@ void Message::readMessage(int fd, User& user)
 	if (_message_raw.length() > 512)
 		_message_raw.substr(0, 510) + '\n';
 
-	while (_message_raw.find("\r\n") != std::string::npos)
-		_message_raw.replace(_message_raw.find("\r\n"), 2, "\n");
+	replaceCRLF(_message_raw);
 
 	size_t cnlr;
 	if ((cnlr = _message_raw.find(EOF, 0)) != std::string::npos)
@@ -115,6 +113,8 @@ void Message::joinString(std::vector<std::string>& dst, std::string& src)
 	}
 }
 
+
+// Getter
 const std::string	&Message::getCommand() const { return _command; }
 const std::string	&Message::getPrefix() const { return _prefix; }
 const std::vector<std::string>& Message::getPostfix() const { return _postfix; }
@@ -131,3 +131,10 @@ void Message::clearData()
 	_parameters.clear();
 	_parameters_str.clear();
 }
+
+std::string &Message::getAnswerForServer()
+{
+	return _answer_for_client;
+}
+
+void Message::setAnswerForServer(const std::string& answer) { _answer_for_client = answer; }

@@ -11,12 +11,14 @@ class User
 	std::string _nickname;
 	std::string _username;
 	std::string _realname;
+	// Fullname для сервера формата "nick!name@localhost"
+	std::string _fullname;
 
 	std::map<std::string, char> _user_channel_mode;
 	// Файловый дескриптор пользователя
 	int _user_fd;
 
-	// прервано ли сообщение
+	// Флаг для прерванных сообщение
 	bool _is_partial_message;
 	// Переменная для хранения прерванных сообщений
 	std::string _partial_message;
@@ -25,8 +27,13 @@ class User
 	bool _is_connected;
 	// Зарегистрирован ли пользователь
 	bool _is_registered;
-	
+
+	// Является ли пользователь IRC оператором канала
 	bool _is_irc_operator;
+
+	// Находится ли пользователь в сети
+	bool _is_online;
+
 	User();
 
  public:
@@ -44,22 +51,26 @@ class User
 	int getUserFD() const;
 	std::string getNickName();
 	std::string getUserName();
-
+	std::string getFullName();
 
 	// Setter
-
 	void setIsPartialMessage(bool condition);
 	void setPartialMessage(const std::string& message);
-	void setIrcOperatorStatus();
 
+	void setIrcOperatorStatus(bool condition);
 	void setConnectionStatus(bool condition);
 	void setRegistrationStatus(bool condition);
 
 	void setNickName(const std::string& name);
 	void setUserName(const std::string& name);
 	void setRealName(const std::string& name);
+	void setFullName(const std::string& nick, const std::string& name);
 
 	std::map<std::string, char> getUserChannelMode() const;
+
+	bool getOnlineStatus() const;
+
+	void setOnlineStatus(bool condition);
 };
 
 #endif //USER_HPP

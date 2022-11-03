@@ -66,15 +66,14 @@ struct config_file
 };
 
 std::string intToString(int number);
-
 config_file parseConfigFile(const std::string& path);
-
 void printConfigFileFields(const config_file& config);
 
 std::queue<std::string> split(const std::string &str, char sep);
+void replaceCRLF(std::string& msg);
 
-int replyError(int user_fd, int reply, const std::string& arg);
-void sendReply(int user_fd, int reply, const std::string& arg = "", const std::string& arg2 = "");
-void sendAnswer(int fd, std::string& msg);
+int sendError(int user_fd, int reply, const std::string& arg);
+void sendReply(int user_fd, int reply, const std::string& nick = "", const std::string& arg = "");
+void sendToClient(int fd, std::string& msg);
 
 #endif //UTILS_HPP

@@ -3,7 +3,7 @@
 int Server::isonCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
-		replyError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+		sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 
 	std::string nickname_list;
 
@@ -19,7 +19,7 @@ int Server::isonCmd(User& user, Message& msg)
 
 	if (nickname_list.empty())
 		nickname_list = "";
-	sendAnswer(user.getUserFD(), nickname_list);
+	sendToClient(user.getUserFD(), nickname_list);
 
 	return 0;
 }
@@ -27,14 +27,11 @@ int Server::isonCmd(User& user, Message& msg)
 int Server::pingCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
-		replyError(user.getUserFD(), ERR_NOORIGIN, "");
-	else
-	{
-		std::string answer;
-		answer = ":" + _config.server_name + " PONG :" + msg.getParams()[0];
+		return sendError(user.getUserFD(), ERR_NOORIGIN, "");
 
-		sendAnswer(user.getUserFD(), answer);
-	}
+	std::string answer = ":" + _config.server_name + " PONG :" + msg.getParams()[0];
+
+	sendToClient(user.getUserFD(), answer);
 
 	return 0;
 }
@@ -44,6 +41,8 @@ int Server::quitCmd(User& user, Message& msg)
 	if (!msg.getCommand().empty())
 	{
 		user.setConnectionStatus(false);
+		std::cout << RED << "Exit from server: " << RESET << user.getNickName() << "\n\n" << std::endl;
+
 		return DISCONNECT;
 	}
 

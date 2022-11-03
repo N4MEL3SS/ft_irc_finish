@@ -19,8 +19,9 @@ std::queue<std::string> split(const std::string &str, char sep)
 
 		std::string::const_iterator	j = std::find(i, str.end(), sep);
 		if (i != str.end())
-        {
+		{
 			ret.push(std::string(i, j));
+			// TODO: Можно ли вынести из if
 			i = j;
 		}
 	}
@@ -111,76 +112,7 @@ void printConfigFileFields(const config_file& config)
 	std::cout << RESET << std::endl;
 }
 
-int replyError(int user_fd, int reply, const std::string& arg)
-{
-	std::string message = intToString(reply) + ' ' + arg;
-
-	switch(reply)
-	{
-	case ERR_NOTREGISTERED:
-		message += " :You have not registered";
-		break;
-	case ERR_PASSWDMISMATCH:
-		message += " :Password incorrect";
-		break;
-	case ERR_NEEDMOREPARAMS:
-		message += " :Not enough parameters";
-		break;
-	case ERR_NICKNAMEINUSE:
-		message += " :Nickname is already in use";
-		break;
-	case ERR_NOSUCHNICK:
-		message += " :No such nick/channel";
-		break ;
-	case ERR_NOSUCHCHANNEL:
-		message += " :No such channel";
-		break;
-	case ERR_NONICKNAMEGIVEN:
-		message += " :No nickname given";
-		break;
-	case ERR_ERRONEUSNICKNAME:
-		message += " :Erroneus nickname";
-		break;
-	case ERR_NOTONCHANNEL:
-		message += " :They aren't on that channel";
-		break;
-	case ERR_ALREADYREGISTRED:
-		message += " :You may not reregister";
-		break;
-	case ERR_NOPRIVILEGES:
-		message += " :Permission Denied- You're not an IRC operator";
-		break;
-	case ERR_NORECIPIENT:
-		message += " :No recipient given";
-		break;
-	case ERR_UNKNOWNCOMMAND:
-		message += " :Unknown command";
-		break;
-	case ERR_NOORIGIN:
-		message += " :No origin specified";
-	case ERR_TOOMANYCHANNELS:
-		message += " " + arg + " :You have joined too many channels";
-	default:
-		break;
-	}
-
-	sendAnswer(user_fd, message);
-	return 1;
-}
-
-// void sendAnswer(int fd, std::string msg)
-// {
-// 	msg += "\r\n";
-// 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
-
-// 	if (std::count(msg.begin(), msg.end(), '\n') > 1)
-// 		std::cout << YELLOW << "Send to client\n" << RESET;
-// 	else
-// 		std::cout << YELLOW << "Send to client: " << RESET;
-// 	std::cout << BLUE << msg << RESET << std::endl;
-// }
-
-void sendAnswer(int fd, std::string &msg)
+void sendToClient(int fd, std::string &msg)
 {
 	msg += "\r\n";
 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
@@ -189,30 +121,12 @@ void sendAnswer(int fd, std::string &msg)
 		std::cout << YELLOW << "Send to client\n" << RESET;
 	else
 		std::cout << YELLOW << "Send to client: " << RESET;
-	std::cout << BLUE << msg << RESET << std::endl;
+	replaceCRLF(msg);
+	std::cout << BLUE << msg + "\n" << RESET << std::endl;
 }
 
-void sendReply(int user_fd, int reply, const std::string& arg, const std::string& arg2)
+void replaceCRLF(std::string& msg)
 {
-    std::string message = intToString(reply) + ' ' + arg;
-
-    switch(reply)
-    {
-        case RPL_MOTDSTART:
-            message += ":- " + arg2 + " Message of the day -";
-            break ;
-        case RPL_MOTD:
-            message += ":- " + arg2;
-            break ;
-        case RPL_ENDOFMOTD:
-            message += ":End of /MOTD command";
-            break ;
-        case RPL_YOUREOPER:
-            message += ":You are now an IRC operator";
-            break ;
-        case RPL_REHASHING:
-            message += arg2 + ":Rehashing";
-            break;
-    }
-    sendAnswer(user_fd, message);
+	while (msg.find("\r\n") != std::string::npos)
+		msg.replace(msg.find("\r\n"), 2, "\n");
 }

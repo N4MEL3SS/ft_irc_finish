@@ -11,7 +11,7 @@ void	sigHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-	// TODO: Можно убрать если юзать IRC_NOSIGNAL в send
+	// TODO: Можно убрать если юзать IRC_NOSIGNAL в send. Надо проверить
 //	signal(SIGPIPE, SIG_IGN);
 
 	signal(SIGINT, sigHandler);
