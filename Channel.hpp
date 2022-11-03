@@ -14,9 +14,9 @@ class Channel
 
 	std::map<int, std::string> _channel_user_fd_map;
 	std::map<std::string, User *> _channel_user_nick_map;
+	std::map<std::string, User *> _channel_operators;
 	std::map<std::string, int> _channel_users;
 
-	std::vector<std::string> _channel_operators;
 	std::vector<std::string> _channel_ban_list;
 	std::vector<bool> _channel_mode;
 
@@ -27,7 +27,9 @@ class Channel
 
 	std::map<std::string, int> &getChannelUsers();
 	std::map<std::string, User *> &getChannelUserNickMap();
-	std::vector<std::string> &getChannelOperators();
+	std::map<std::string, User *> &getChannelOperators();
+
+	int& getCountUsers();
 
 	std::string &getChannelName();
 	std::string &getChannelPassword();
@@ -36,10 +38,7 @@ class Channel
 	void setChannelPassword();
 	void setChannelMode(int i, bool status);
 
-	int& getCountUsers();
-
 	void setCountUsersPlus();
-
 	void setCountUsersMinus();
 };
 

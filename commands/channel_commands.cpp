@@ -122,17 +122,16 @@ int Server::partCmd(User& user, Message& msg)
 		{
 			Channel& ref_chan = *_channels_map[chans.front()];
 
-			std::vector<std::string>::iterator it;
-			it = std::find(ref_chan.getChannelOperators().begin(), \
-					ref_chan.getChannelOperators().end(), user.getNickName());
-			ref_chan.getChannelOperators().erase(it);
+			std::map<std::string, User *>::iterator it;
+			if ((it = ref_chan.getChannelOperators().find(user.getNickName())) != ref_chan.getChannelOperators().end())
+				ref_chan.getChannelOperators().erase(it);
 
 			if (ref_chan.getChannelOperators().empty() && !ref_chan.getChannelUsers().empty())
 			{
-				std::map<std::string, int>::iterator it_b;
-				it_b = ref_chan.getChannelUsers().begin();
-				ref_chan.getChannelOperators().push_back(it_b->first);
-				it_b->second = CHANNEL_O_FLAG;
+				std::map<std::string, User *>::iterator it_b;
+				it_b = ref_chan.getChannelUserNickMap().begin();
+				ref_chan.getChannelOperators()[it_b->first] = it_b->second;
+				ref_chan.getChannelUsers()[it_b->first] = CHANNEL_O_FLAG;
 			}
 
 			ref_chan.getChannelUsers().erase(ref_chan.getChannelUsers().find(user.getNickName()));
@@ -145,10 +144,6 @@ int Server::partCmd(User& user, Message& msg)
 
 	return 0;
 }
-
-//:ircserv 353 levensta1 #ratata :levensta1!levensta1@localhost
-//:ircserv 353 levensta1 #ratata :levensta2!levensta2@localhost
-//:ircserv 366 levensta1 #ratata :End of /NAMES list
 
 int Server::whoCmd(User& user, Message &msg)
 {

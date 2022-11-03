@@ -22,4 +22,4 @@ void Channel::setChannelMode(int i,bool status) { _channel_mode[i] = status; }
 void Channel::setCountUsersPlus() { _count_users_in_channel++; }
 void Channel::setCountUsersMinus() { _count_users_in_channel--; }
 
-std::vector<std::string>& Channel::getChannelOperators() { return this->_channel_operators; }
+std::map<std::string, User *> &Channel::getChannelOperators() { return this->_channel_operators; }
