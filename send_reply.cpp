@@ -1,8 +1,8 @@
 #include "Utils.hpp"
 
-void sendReply(int user_fd, int reply, const std::string& nick, const std::string& arg)
+void sendReply(int user_fd, int reply, const std::string& nick, const std::string& arg, const std::string& conf_name)
 {
-	std::string message = intToString(reply) + ' ' + nick;
+	std::string message = conf_name + intToString(reply) + ' ' + nick;
 
 	switch(reply)
 	{
