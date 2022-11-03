@@ -53,3 +53,7 @@ void User::setRealName(const std::string& name) { this->_realname = name; }
 // TODO: Стоит ли добавлять строку в конце?
 void User::setFullName(const std::string& nick, const std::string& name) { this->_fullname = nick + "!" + name + "@127.0.0.1"; }
 
+std::string User::getRealName() {
+	return (this->_realname);
+}
+

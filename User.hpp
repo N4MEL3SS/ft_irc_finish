@@ -52,6 +52,7 @@ class User
 	std::string getNickName();
 	std::string getUserName();
 	std::string getFullName();
+	std::string getRealName();
 
 	// Setter
 	void setIsPartialMessage(bool condition);

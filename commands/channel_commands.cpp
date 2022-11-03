@@ -61,7 +61,7 @@ int Server::joinCmd(User& user, Message& msg)
 
 			sendToClient(it_u->second->getUserFD(), send_msg);
 
-			send_msg = ":" + _config.server_name + " 366 " + it_u->second->getNickName() + " " + chans.front() + " :End of /NAMES list";
+			send_msg = ":" + _config.server_name + " 366 " + it_u->second->getNickName() + " " + chans.front() + " :End of /NAMES list.";
 			sendToClient(it_u->second->getUserFD(), send_msg);
 		}
 
@@ -142,11 +142,19 @@ int Server::partCmd(User& user, Message& msg)
 
 int Server::whoCmd(User& user, Message &msg)
 {
-	std::string g = ":" + _config.server_name + " 352 " + user.getNickName() + " " +  msg.getParamsStr() + " :End of /WHO list";
-	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
-	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
-	sendToClient(user.getUserFD(), g);
+	std::string g = ":" + _config.server_name + " 352 " + user.getNickName() + " " +  msg.getParamsStr() + " " + user.getUserName()
+			+ " * localhost " + user.getNickName() + " H " + ":" + user.getRealName();
 
+	std::map<std::string, User *>::iterator it_b = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().begin();
+	std::map<std::string, User *>::iterator it_e = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().end();
+	std::string users_names = "";
+	for (; it_b != it_e; it_b++){
+		g = ":" + _config.server_name + " 352 " + user.getNickName() + " " + msg.getParamsStr() + " " + it_b->second->getUserName()
+				+ " * localhost " + it_b->second->getNickName() + " H : " + it_b->second->getRealName();
+		sendToClient(user.getUserFD(), g);
+	}
+	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " + msg.getParamsStr() + " :End of /WHO list.";
+	sendToClient(user.getUserFD(), g);
 	return 0;
 }
 
