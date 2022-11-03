@@ -81,7 +81,7 @@ int Server::checkChannelsError(User& user, Message &msg)
 	return 0;
 }
 
-int Server::passCmd(User& user, Message& msg)
+int Server::part(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
 		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
@@ -89,6 +89,8 @@ int Server::passCmd(User& user, Message& msg)
 	std::queue<std::string>	chans = split(msg.getParams()[0], ',');
 	while (!chans.empty())
 	{
+
+
 		if (_channels_map.find(chans.front()) == _channels_map.end())
 			return sendError(user.getUserFD(), ERR_NOSUCHCHANNEL, chans.front());
 		else if (_channels_map[chans.front()]->getChannelUserNickMap().find(user.getNickName()) == \
@@ -96,7 +98,7 @@ int Server::passCmd(User& user, Message& msg)
 			return sendError(user.getUserFD(), ERR_NOTONCHANNEL, chans.front());
 		else
 		{
-
+			Channel& ref_chan = *_channels_map[chans.front()];
 		}
 		chans.pop();
 	}

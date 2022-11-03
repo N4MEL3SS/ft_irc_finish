@@ -73,6 +73,7 @@ class Server
 	void createAnswer(User& user, Message& msg, std::string recepient);
 
 	int joinCmd(User &user, Message &msg);
+	int part(User& user, Message& msg);
 	int modeCmd(User& user, Message& msg);
 	int checkChannelsError(User& user, Message& msg);
 
@@ -96,6 +97,8 @@ class Server
 	bool checkIrcOperatorStatus(User &user);
 
 	void sendPrivmsgChannel(User& user, Message& msg, const std::string& recipient);
+
+
 };
 
 #endif //SERVER_HPP
