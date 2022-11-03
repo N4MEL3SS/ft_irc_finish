@@ -43,6 +43,10 @@
 #define CHANNEL_MODE_L_INDEX 2 // Флаг количества пользователей
 #define CHANNEL_MODE_T_INDEX 3 // Флаг топика
 
+#define CHANNEL_O_FLAG 2
+#define CHANNEL_V_FLAG 1
+#define CHANNEL_N_FLAG 0
+
 struct config_file
 {
 	std::string server_name;

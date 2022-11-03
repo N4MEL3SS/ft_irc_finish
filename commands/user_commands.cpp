@@ -18,8 +18,8 @@ void Server::sendPrivmsgChannel(User& user, Message& msg, const std::string& rec
 		it_b_users = map.begin();
 		for (; it_b_users != it_e_users; it_b_users++)
 		{
-			createAnswer(*it_b_users->second, msg, recipient);
-			sendToClient(it_b_users->second->getUserFD(), msg.getAnswerForServer());
+			createAnswerPrivmsg(*it_b_users->second, msg, recipient);
+			sendToClient(it_b_users->second->getUserFD(), msg.getAnswerForClient());
 		}
 	}
 }
@@ -48,8 +48,8 @@ int Server::privmsgCmd(User& user, Message& msg)
 		}
 		else if (_users_nick_map.find(recipients.front()) != _users_nick_map.end())
 		{
-//			to_client = createAnswer(user, msg, recipients.front());
-			sendToClient(_users_nick_map[recipients.front()]->getUserFD(), msg.getAnswerForServer());
+			createAnswerPrivmsg(user, msg, recipients.front());
+			sendToClient(_users_nick_map[recipients.front()]->getUserFD(), msg.getAnswerForClient());
 		}
 		else
 			sendError(user.getUserFD(), ERR_NOSUCHNICK, recipients.front());
@@ -60,7 +60,12 @@ int Server::privmsgCmd(User& user, Message& msg)
 	return 0;
 }
 
-void Server::createAnswer(User& user, Message& msg, std::string recepient)
+void Server::createAnswerPrivmsg(User& user, Message& msg, std::string recepient)
 {
 	msg.setAnswerForServer(":" + user.getFullName() + " " + msg.getCommand() + " " + recepient + " :" + msg.getParamsStr());
+}
+
+void Server::createAnswerJoin(User& user, Message& msg, std::string recepient)
+{
+	msg.setAnswerForServer(":" + user.getFullName() + " " + msg.getCommand() + " " + recepient);
 }

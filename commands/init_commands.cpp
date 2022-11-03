@@ -17,7 +17,7 @@ void Server::initCommands()
 
 	_commands_map["JOIN"] = &Server::joinCmd;
 	_commands_map["MODE"] = &Server::modeCmd;
-//	_commands_map["PART"] = &Server::
+	_commands_map["PART"] = &Server::partCmd;
 	_commands_map["WHO"] = &Server::whoCmd;
 //
 //	_commands_map["INVITE"] = &Server::

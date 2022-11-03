@@ -39,7 +39,7 @@ class Message
 	const std::string				&getPostfixStr() const;
 	const std::vector<std::string>	&getParams() const;
 	const std::string				&getParamsStr() const;
-	std::string						&getAnswerForServer();
+	std::string						&getAnswerForClient();
 
 	void setAnswerForServer(const std::string& answer);
 };

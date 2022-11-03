@@ -33,18 +33,23 @@ int Server::joinCmd(User& user, Message& msg)
 
 		Channel& ref_chan = *_channels_map[chans.front()];
 
-		createAnswer(user, msg, chans.front());
-		sendToClient(user.getUserFD(), msg.getAnswerForServer());
+		createAnswerJoin(user, msg, chans.front());
+		sendToClient(user.getUserFD(), msg.getAnswerForClient());
 
 		std::string send_msg = ":" + _config.server_name + " 331 " + user.getNickName() + chans.front() + " :No topic is set";
 		sendToClient(user.getUserFD(), send_msg);
 
 		send_msg = ":" + _config.server_name + " 353 " +  user.getNickName() + " = " + chans.front() + " :";
-		for (size_t i = 0; i < ref_chan.getChannelOperators().size(); i++)
-			send_msg += "@" +  ref_chan.getChannelOperators()[i] + " ";
-		for (size_t i = 0; i < ref_chan.getChannelUsers().size(); i++)
-			send_msg += ref_chan.getChannelUsers()[i] + " ";
+		std::map<std::string, int>::iterator it_b = ref_chan.getChannelUsers().begin();
+		std::map<std::string, int>::iterator it_e = ref_chan.getChannelUsers().end();
 
+		for (; it_b != it_e; it_b++)
+		{
+			if (it_b->second == CHANNEL_O_FLAG)
+				send_msg += "@";
+			send_msg += it_b->first + " ";
+		}
+		send_msg.replace(send_msg.size() - 1, 1, "");
 		sendToClient(user.getUserFD(), send_msg);
 
 //		sendReply(user.getUserFD(), RPL_ENDOFNAMES, user.getNickName());
@@ -62,13 +67,16 @@ int Server::joinCmd(User& user, Message& msg)
 void Server::addUser(User& user, Channel &chan)
 {
 	chan.getChannelUserNickMap()[user.getNickName()] = &user;
-	chan.getChannelAllUsers().push_back(user.getNickName());
 
 	if (chan.getChannelOperators().empty())
+	{
 		chan.getChannelOperators().push_back(user.getNickName());
+		chan.getChannelUsers()[user.getNickName()] = CHANNEL_O_FLAG;
+	}
 	else
-		chan.getChannelUsers().push_back(user.getNickName());
-
+	{
+		chan.getChannelUsers()[user.getNickName()] = CHANNEL_N_FLAG;
+	}
 }
 
 int Server::checkChannelsError(User& user, Message &msg)
@@ -81,7 +89,7 @@ int Server::checkChannelsError(User& user, Message &msg)
 	return 0;
 }
 
-int Server::part(User& user, Message& msg)
+int Server::partCmd(User& user, Message& msg)
 {
 	if (msg.getParams().empty())
 		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
@@ -89,16 +97,22 @@ int Server::part(User& user, Message& msg)
 	std::queue<std::string>	chans = split(msg.getParams()[0], ',');
 	while (!chans.empty())
 	{
-
-
 		if (_channels_map.find(chans.front()) == _channels_map.end())
 			return sendError(user.getUserFD(), ERR_NOSUCHCHANNEL, chans.front());
 		else if (_channels_map[chans.front()]->getChannelUserNickMap().find(user.getNickName()) == \
 			_channels_map[chans.front()]->getChannelUserNickMap().end())
 			return sendError(user.getUserFD(), ERR_NOTONCHANNEL, chans.front());
+		// Удаление данных пользователя с канала
 		else
 		{
 			Channel& ref_chan = *_channels_map[chans.front()];
+
+			std::vector<std::string>::iterator it;
+			it = std::find(ref_chan.getChannelOperators().begin(), \
+					ref_chan.getChannelOperators().end(), user.getNickName());
+			ref_chan.getChannelOperators().erase(it);
+			ref_chan.getChannelUsers().erase(ref_chan.getChannelUsers().find(user.getNickName()));
+			ref_chan.getChannelUserNickMap().erase(ref_chan.getChannelUserNickMap().find(user.getNickName()));
 		}
 		chans.pop();
 	}

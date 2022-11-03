@@ -70,12 +70,13 @@ class Server
 	void sendMOTD(User& user);
 
 	int privmsgCmd(User &user, Message &msg);
-	void createAnswer(User& user, Message& msg, std::string recepient);
+	void createAnswerPrivmsg(User& user, Message& msg, std::string recepient);
 
 	int joinCmd(User &user, Message &msg);
-	int part(User& user, Message& msg);
+	int partCmd(User& user, Message& msg);
 	int modeCmd(User& user, Message& msg);
 	int checkChannelsError(User& user, Message& msg);
+	void createAnswerJoin(User& user, Message& msg, std::string recepient);
 
 	int pingCmd(User& user, Message& msg);
 	int isonCmd(User& user, Message& msg);

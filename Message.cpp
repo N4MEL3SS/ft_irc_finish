@@ -132,7 +132,7 @@ void Message::clearData()
 	_parameters_str.clear();
 }
 
-std::string &Message::getAnswerForServer()
+std::string &Message::getAnswerForClient()
 {
 	return _answer_for_client;
 }
