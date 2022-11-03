@@ -65,10 +65,6 @@ int Server::joinCmd(User& user, Message& msg)
 			sendToClient(it_u->second->getUserFD(), send_msg);
 		}
 
-
-//		sendReply(user.getUserFD(), RPL_ENDOFNAMES, user.getNickName());
-
-
 		chans.pop();
 		if (!keys.empty())
 			keys.pop();
@@ -84,7 +80,7 @@ void Server::addUser(User& user, Channel &chan)
 
 	if (chan.getChannelOperators().empty())
 	{
-		chan.getChannelOperators().push_back(user.getNickName());
+		chan.getChannelOperators()[user.getNickName()] = &user;
 		chan.getChannelUsers()[user.getNickName()] = CHANNEL_O_FLAG;
 	}
 	else
@@ -141,16 +137,15 @@ int Server::partCmd(User& user, Message& msg)
 		chans.pop();
 	}
 
-
 	return 0;
 }
 
 int Server::whoCmd(User& user, Message &msg)
 {
-	std::string g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
+	std::string g = ":" + _config.server_name + " 352 " + user.getNickName() + " " +  msg.getParamsStr() + " :End of /WHO list";
+	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
+	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
 	sendToClient(user.getUserFD(), g);
-//	g = ":" + _config.server_name + " 303 " + user.getNickName() + " :" + _user_online;
-//	sendToClient(user.getUserFD(), g);
 
 	return 0;
 }

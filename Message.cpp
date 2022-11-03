@@ -23,9 +23,7 @@ void Message::readMessage(int fd, User& user)
 		_message_raw += buff;
 		if (_message_raw.find('\n') != std::string::npos)
 			break;
-
-		// TODO: Стоит ли терминировать строку ?
-//		buff[0] = '\0';
+		buff[0] = '\0';
 	}
 
 	if (bytesRead <= 0 && _message_raw.empty())
@@ -113,7 +111,6 @@ void Message::joinString(std::vector<std::string>& dst, std::string& src)
 	}
 }
 
-
 // Getter
 const std::string	&Message::getCommand() const { return _command; }
 const std::string	&Message::getPrefix() const { return _prefix; }
@@ -130,11 +127,9 @@ void Message::clearData()
 	_postfix_str.clear();
 	_parameters.clear();
 	_parameters_str.clear();
+	_answer_for_client.clear();
 }
 
-std::string &Message::getAnswerForClient()
-{
-	return _answer_for_client;
-}
+std::string &Message::getAnswerForClient() { return _answer_for_client; }
 
 void Message::setAnswerForClient(const std::string& answer) { _answer_for_client = answer; }
