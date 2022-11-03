@@ -57,6 +57,10 @@ int Server::joinCmd(User& user, Message& msg)
 
 		for (;it_u != it_u_e; it_u++)
 		{
+			if (it_u->second != &user){
+				std::string shit = ":" + user.getNickName() + " JOIN " + chans.front();
+				sendToClient(it_u->second->getUserFD(), shit);
+			}
 			send_msg = ":" + _config.server_name + " 353 " +  it_u->second->getNickName() + " = " + chans.front() + " :" + users_names;
 
 			sendToClient(it_u->second->getUserFD(), send_msg);
@@ -150,7 +154,7 @@ int Server::whoCmd(User& user, Message &msg)
 	std::string users_names = "";
 	for (; it_b != it_e; it_b++){
 		g = ":" + _config.server_name + " 352 " + user.getNickName() + " " + msg.getParamsStr() + " " + it_b->second->getUserName()
-				+ " * localhost " + it_b->second->getNickName() + " H : " + it_b->second->getRealName();
+				+ " * localhost " + it_b->second->getNickName() + " H :0 " + it_b->second->getRealName();
 		sendToClient(user.getUserFD(), g);
 	}
 	g = ":" + _config.server_name + " 315 " + user.getNickName() + " " + msg.getParamsStr() + " :End of /WHO list.";

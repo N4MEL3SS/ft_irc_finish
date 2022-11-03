@@ -118,9 +118,9 @@ void sendToClient(int fd, std::string &msg)
 	send(fd, msg.c_str(), msg.size(), IRC_NOSIGNAL);
 
 	if (std::count(msg.begin(), msg.end(), '\n') > 1)
-		std::cout << YELLOW << "Send to client\n" << RESET;
+		std::cout << YELLOW << "Send to client [" << fd << "]\n" << RESET;
 	else
-		std::cout << YELLOW << "Send to client: " << RESET;
+		std::cout << YELLOW << "Send to client [" << fd << "]: " << RESET;
 	replaceCRLF(msg);
 	std::cout << BLUE << msg + "\n" << RESET << std::endl;
 }

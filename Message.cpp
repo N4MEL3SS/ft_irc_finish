@@ -45,9 +45,9 @@ void Message::readMessage(int fd, User& user)
 	_message_queue = split(_message_raw, '\n');
 
 	if (std::count(_message_raw.begin(), _message_raw.end(), '\n') > 1)
-		std::cout << YELLOW << "Input from client\n" << RESET;
+		std::cout << YELLOW << "Input from client [" << fd << "]\n" << RESET;
 	else
-		std::cout << YELLOW << "Input from client: " << RESET;
+		std::cout << YELLOW << "Input from client [" << fd << "]: " << RESET;
 	std::cout << CYAN << _message_raw << RESET << std::endl;
 }
 
