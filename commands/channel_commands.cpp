@@ -9,7 +9,8 @@ int Server::joinCmd(User& user, Message& msg)
 	std::queue<std::string> chans = split(keys.front(), ',');
 
 	keys.pop();
-	keys = split(keys.front(), ',');
+	if (!keys.empty())
+		keys = split(keys.front(), ',');
 
 	while (!chans.empty())
 	{
@@ -36,7 +37,7 @@ int Server::joinCmd(User& user, Message& msg)
 		createAnswerJoin(user, msg, chans.front());
 		sendToClient(user.getUserFD(), msg.getAnswerForClient());
 
-		std::string send_msg = ":" + _config.server_name + " 331 " + user.getNickName() + chans.front() + " :No topic is set";
+		std::string send_msg = ":" + _config.server_name + " 331 " + user.getNickName() + " " + chans.front() + " :No topic is set";
 		sendToClient(user.getUserFD(), send_msg);
 
 		send_msg = ":" + _config.server_name + " 353 " +  user.getNickName() + " = " + chans.front() + " :";
@@ -49,7 +50,7 @@ int Server::joinCmd(User& user, Message& msg)
 				send_msg += "@";
 			send_msg += it_b->first + " ";
 		}
-		send_msg.replace(send_msg.size() - 1, 1, "");
+		//send_msg.replace(send_msg.size() - 1, 1, "");
 		sendToClient(user.getUserFD(), send_msg);
 
 //		sendReply(user.getUserFD(), RPL_ENDOFNAMES, user.getNickName());
@@ -102,6 +103,7 @@ int Server::partCmd(User& user, Message& msg)
 		else if (_channels_map[chans.front()]->getChannelUserNickMap().find(user.getNickName()) == \
 			_channels_map[chans.front()]->getChannelUserNickMap().end())
 			return sendError(user.getUserFD(), ERR_NOTONCHANNEL, chans.front());
+		// TODO: Проверить на нового оператора
 		// Удаление данных пользователя с канала
 		else
 		{
