@@ -3,11 +3,13 @@
 int Server::joinCmd(User& user, Message& msg)
 {
 	if (checkChannelsError(user, msg))
-		return 0;
+		return -1;
 
 	std::queue<std::string>	keys = split(msg.getParamsStr(), ' ');
 	std::queue<std::string> chans = split(keys.front(), ',');
+
 	keys.pop();
+	keys = split(keys.front(), ',');
 
 	while (!chans.empty())
 	{
@@ -29,19 +31,25 @@ int Server::joinCmd(User& user, Message& msg)
 				sendError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 		}
 
+		Channel& ref_chan = *_channels_map[chans.front()];
 
 		createAnswer(user, msg, chans.front());
-//		std::string check =
 		sendToClient(user.getUserFD(), msg.getAnswerForServer());
 
-//		std::string y = ":" + _config.server_name + " 331 wabathur #asdfg :No topic is set";
-//		std::string y = "331 #asdfg :topic";
-//		sendToClient(user.getUserFD(), y);
+		std::string send_msg = ":" + _config.server_name + " 331 " + user.getNickName() + chans.front() + " :No topic is set";
+		sendToClient(user.getUserFD(), send_msg);
 
-		std::string t = ":" + _config.server_name + " 353 wabathur = #asdfg :@wabathur";
-		sendToClient(user.getUserFD(), t);
-		t = ":" + _config.server_name + " 366 wabathur #asdfg :End of /NAMES list";
-		sendToClient(user.getUserFD(), t);
+		send_msg = ":" + _config.server_name + " 353 " +  user.getNickName() + " = " + chans.front() + " :";
+		for (size_t i = 0; i < ref_chan.getChannelOperators().size(); i++)
+			send_msg += "@" +  ref_chan.getChannelOperators()[i] + " ";
+		for (size_t i = 0; i < ref_chan.getChannelUsers().size(); i++)
+			send_msg += ref_chan.getChannelUsers()[i] + " ";
+
+		sendToClient(user.getUserFD(), send_msg);
+
+//		sendReply(user.getUserFD(), RPL_ENDOFNAMES, user.getNickName());
+		send_msg = ":" + _config.server_name + " 366 " + user.getNickName() + " " + chans.front() + " :End of /NAMES list";
+		sendToClient(user.getUserFD(), send_msg);
 
 		chans.pop();
 		if (!keys.empty())
@@ -54,10 +62,12 @@ int Server::joinCmd(User& user, Message& msg)
 void Server::addUser(User& user, Channel &chan)
 {
 	chan.getChannelUserNickMap()[user.getNickName()] = &user;
-	chan.getChannelUsers().push_back(user.getNickName());
+	chan.getChannelAllUsers().push_back(user.getNickName());
 
 	if (chan.getChannelOperators().empty())
 		chan.getChannelOperators().push_back(user.getNickName());
+	else
+		chan.getChannelUsers().push_back(user.getNickName());
 
 }
 
@@ -67,6 +77,30 @@ int Server::checkChannelsError(User& user, Message &msg)
 		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
 	else if (_channels_map.size() >= _config.max_channels)
 		return sendError(user.getUserFD(), ERR_TOOMANYCHANNELS, intToString(_channels_map.size()));
+
+	return 0;
+}
+
+int Server::passCmd(User& user, Message& msg)
+{
+	if (msg.getParams().empty())
+		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
+
+	std::queue<std::string>	chans = split(msg.getParams()[0], ',');
+	while (!chans.empty())
+	{
+		if (_channels_map.find(chans.front()) == _channels_map.end())
+			return sendError(user.getUserFD(), ERR_NOSUCHCHANNEL, chans.front());
+		else if (_channels_map[chans.front()]->getChannelUserNickMap().find(user.getNickName()) == \
+			_channels_map[chans.front()]->getChannelUserNickMap().end())
+			return sendError(user.getUserFD(), ERR_NOTONCHANNEL, chans.front());
+		else
+		{
+
+		}
+		chans.pop();
+	}
+
 
 	return 0;
 }

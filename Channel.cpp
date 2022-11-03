@@ -10,6 +10,7 @@ Channel::~Channel() {}
 
 std::vector<std::string>& Channel::getChannelUsers() { return this->_channel_users; }
 std::vector<std::string>& Channel::getChannelOperators() { return this->_channel_operators; }
+std::vector<std::string>& Channel::getChannelAllUsers() { return this->_channel_all_users; }
 std::map<std::string, User *> &Channel::getChannelUserNickMap() { return this->_channel_user_nick_map; }
 
 std::string& Channel::getChannelPassword()

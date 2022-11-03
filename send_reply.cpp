@@ -21,6 +21,31 @@ void sendReply(int user_fd, int reply, const std::string& nick, const std::strin
 	case RPL_REHASHING:
 		message += arg + ":Rehashing";
 		break;
+	case RPL_AWAY:
+//		message +=
+		break;
+	case RPL_UNAWAY:
+//		message +=
+		break;
+	case RPL_ISON:
+//		message +=
+		break;
+	case RPL_ENDOFWHO:
+		message += nick + " :End of /WHO list";
+		break;
+	case RPL_NOTOPIC:
+//		message +=
+		break;
+	case RPL_TOPIC:
+		message += nick + " :No topic is set";
+		break;
+	case RPL_NAMREPLY:
+//		message +=
+		break;
+	case RPL_ENDOFNAMES:
+		message += nick + " :End of /NAMES list";
+		break;
 	}
+
 	sendToClient(user_fd, message);
 }
