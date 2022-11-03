@@ -141,7 +141,17 @@ void Server::deleteUsersFromServer()
 
 void Server::deleteEmptyChannels()
 {
+	std::map<std::string, Channel *>::iterator it_b = _channels_map.begin();
+	std::map<std::string, Channel *>::iterator it_e = _channels_map.end();
 
+	for (; it_b != it_e; it_b++)
+	{
+		if (it_b->second->getCountUsers() < 1)
+		{
+			delete it_b->second;
+			_channels_map.erase(it_b);
+		}
+	}
 }
 
 int Server::findPollfd(int fd)

@@ -41,7 +41,7 @@ class Message
 	const std::string				&getParamsStr() const;
 	std::string						&getAnswerForClient();
 
-	void setAnswerForServer(const std::string& answer);
+	void setAnswerForClient(const std::string& answer);
 };
 
 #endif //MESSAGE_HPP

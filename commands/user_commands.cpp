@@ -18,8 +18,11 @@ void Server::sendPrivmsgChannel(User& user, Message& msg, const std::string& rec
 		it_b_users = map.begin();
 		for (; it_b_users != it_e_users; it_b_users++)
 		{
-			createAnswerPrivmsg(*it_b_users->second, msg, recipient);
-			sendToClient(it_b_users->second->getUserFD(), msg.getAnswerForClient());
+			if (it_b_users->second->getUserFD() != user.getUserFD())
+			{
+				createAnswerPrivmsg(user, msg, recipient);
+				sendToClient(it_b_users->second->getUserFD(), msg.getAnswerForClient());
+			}
 		}
 	}
 }
@@ -44,7 +47,7 @@ int Server::privmsgCmd(User& user, Message& msg)
 		if ((recipients.front()[0] == '#' || recipients.front()[0] == '&') && \
 			_channels_map.find(recipients.front()) != _channels_map.end())
 		{
-
+			sendPrivmsgChannel(user, msg, recipients.front());
 		}
 		else if (_users_nick_map.find(recipients.front()) != _users_nick_map.end())
 		{
@@ -62,10 +65,10 @@ int Server::privmsgCmd(User& user, Message& msg)
 
 void Server::createAnswerPrivmsg(User& user, Message& msg, std::string recepient)
 {
-	msg.setAnswerForServer(":" + user.getFullName() + " " + msg.getCommand() + " " + recepient + " :" + msg.getParamsStr());
+	msg.setAnswerForClient(":" + user.getFullName() + " " + msg.getCommand() + " " + recepient + " :" + msg.getParamsStr());
 }
 
 void Server::createAnswerJoin(User& user, Message& msg, std::string recepient)
 {
-	msg.setAnswerForServer(":" + user.getFullName() + " " + msg.getCommand() + " " + recepient);
+	msg.setAnswerForClient(":" + user.getFullName() + " " + msg.getCommand() + " :" + recepient);
 }

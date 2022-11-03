@@ -46,6 +46,8 @@ class Server
 	// Вектор для хранения fd пользователей которых нужно удалить
 	std::vector<int> _delete_users;
 
+	std::string _user_online;
+
  public:
 	Server(int port, const std::string& password, const std::string& path_to_conf = "./conf/conf.conf");
 	~Server();

@@ -35,6 +35,12 @@ class Channel
 	void setChannelName();
 	void setChannelPassword();
 	void setChannelMode(int i, bool status);
+
+	int& getCountUsers();
+
+	void setCountUsersPlus();
+
+	void setCountUsersMinus();
 };
 
 #endif //CHANNEL_HPP

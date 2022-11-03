@@ -137,4 +137,4 @@ std::string &Message::getAnswerForClient()
 	return _answer_for_client;
 }
 
-void Message::setAnswerForServer(const std::string& answer) { _answer_for_client = answer; }
+void Message::setAnswerForClient(const std::string& answer) { _answer_for_client = answer; }

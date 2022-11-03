@@ -40,22 +40,34 @@ int Server::joinCmd(User& user, Message& msg)
 		std::string send_msg = ":" + _config.server_name + " 331 " + user.getNickName() + " " + chans.front() + " :No topic is set";
 		sendToClient(user.getUserFD(), send_msg);
 
-		send_msg = ":" + _config.server_name + " 353 " +  user.getNickName() + " = " + chans.front() + " :";
+		std::map<std::string, User *>::iterator it_u = ref_chan.getChannelUserNickMap().begin();
+		std::map<std::string, User *>::iterator it_u_e = ref_chan.getChannelUserNickMap().end();
+
 		std::map<std::string, int>::iterator it_b = ref_chan.getChannelUsers().begin();
 		std::map<std::string, int>::iterator it_e = ref_chan.getChannelUsers().end();
-
+		std::string users_names = "";
 		for (; it_b != it_e; it_b++)
 		{
 			if (it_b->second == CHANNEL_O_FLAG)
-				send_msg += "@";
-			send_msg += it_b->first + " ";
+				users_names += "@";
+			users_names += it_b->first + " ";
 		}
-		//send_msg.replace(send_msg.size() - 1, 1, "");
-		sendToClient(user.getUserFD(), send_msg);
+		users_names.replace(users_names.size() - 1, 1, "");
+		_user_online = users_names;
+
+		for (;it_u != it_u_e; it_u++)
+		{
+			send_msg = ":" + _config.server_name + " 353 " +  it_u->second->getNickName() + " = " + chans.front() + " :" + users_names;
+
+			sendToClient(it_u->second->getUserFD(), send_msg);
+
+			send_msg = ":" + _config.server_name + " 366 " + it_u->second->getNickName() + " " + chans.front() + " :End of /NAMES list";
+			sendToClient(it_u->second->getUserFD(), send_msg);
+		}
+
 
 //		sendReply(user.getUserFD(), RPL_ENDOFNAMES, user.getNickName());
-		send_msg = ":" + _config.server_name + " 366 " + user.getNickName() + " " + chans.front() + " :End of /NAMES list";
-		sendToClient(user.getUserFD(), send_msg);
+
 
 		chans.pop();
 		if (!keys.empty())
@@ -68,6 +80,7 @@ int Server::joinCmd(User& user, Message& msg)
 void Server::addUser(User& user, Channel &chan)
 {
 	chan.getChannelUserNickMap()[user.getNickName()] = &user;
+	chan.setCountUsersPlus();
 
 	if (chan.getChannelOperators().empty())
 	{
@@ -113,8 +126,18 @@ int Server::partCmd(User& user, Message& msg)
 			it = std::find(ref_chan.getChannelOperators().begin(), \
 					ref_chan.getChannelOperators().end(), user.getNickName());
 			ref_chan.getChannelOperators().erase(it);
+
+			if (ref_chan.getChannelOperators().empty() && !ref_chan.getChannelUsers().empty())
+			{
+				std::map<std::string, int>::iterator it_b;
+				it_b = ref_chan.getChannelUsers().begin();
+				ref_chan.getChannelOperators().push_back(it_b->first);
+				it_b->second = CHANNEL_O_FLAG;
+			}
+
 			ref_chan.getChannelUsers().erase(ref_chan.getChannelUsers().find(user.getNickName()));
 			ref_chan.getChannelUserNickMap().erase(ref_chan.getChannelUserNickMap().find(user.getNickName()));
+			ref_chan.setCountUsersMinus();
 		}
 		chans.pop();
 	}
@@ -129,7 +152,9 @@ int Server::partCmd(User& user, Message& msg)
 
 int Server::whoCmd(User& user, Message &msg)
 {
-//	std::string g = ":IRCat 315 wabathur wabathur :End of /WHO list";
+	std::string g = ":" + _config.server_name + " 315 " + user.getNickName() + " " +  user.getNickName() + " :End of /WHO list";
+	sendToClient(user.getUserFD(), g);
+//	g = ":" + _config.server_name + " 303 " + user.getNickName() + " :" + _user_online;
 //	sendToClient(user.getUserFD(), g);
 
 	return 0;
