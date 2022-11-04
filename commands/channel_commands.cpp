@@ -167,7 +167,9 @@ int Server::modeCmd(User& user, Message &msg)
 			{
 				if (msg.getParams()[1][i] == 'o')
 				{
-//					user.getUserChannelMode()[]
+					if (_users_nick_map.find(msg.getParams()[1]) != _users_nick_map.end())
+					{
+					}
 				}
 			}
 		}
@@ -183,10 +185,17 @@ int Server::kickCmd(User& user, Message &msg)
 		Channel & ref_chan = *_channels_map[msg.getParams()[0]];
 		if (ref_chan.getChannelOperators().find(user.getNickName()) != ref_chan.getChannelOperators().end())
 		{
-			std::string reply = ":" + user.getFullName() + " KICK " + ref_chan.getChannelName() + " "
-					+ msg.getParams()[1] + "\r\n";
-			//int fd = _users_nick_map[msg.getParams()[1]]->getUserFD();
-			send(user.getUserFD(), reply.c_str(), reply.size(), 0);
+			std::string nick_to_kick = msg.getParams()[1].substr(0, msg.getParams()[1].find_first_of(','));
+			std::string reply = ":" + user.getFullName () + " KICK " + ref_chan.getChannelName() + " "
+					+ nick_to_kick + " :\r\n";
+			int fd = _users_nick_map[nick_to_kick]->getUserFD();
+			std::cout << fd << reply <<'\n';
+			std::map<int, User *>::iterator it = _users_fd_map.begin();
+			while (it != _users_fd_map.end()){
+				send(it->first, reply.c_str(), reply.size(), 0);
+				it++;
+			}
+
 		}
 	}
 	return 0;
