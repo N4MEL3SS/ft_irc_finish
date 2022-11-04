@@ -37,7 +37,7 @@ int Server::joinCmd(User& user, Message& msg)
 		createAnswerJoin(user, msg, chans.front());
 		sendToClient(user.getUserFD(), msg.getAnswerForClient());
 
-        sendReply(user.getUserFD(), RPL_NOTOPIC, user.getNickName() + " " + chans.front(), "", ":" + _config.server_name);
+		sendReply(user.getUserFD(), RPL_NOTOPIC, user.getNickName() + " " + chans.front(), "", ":" + _config.server_name);
 
 		std::map<std::string, User *>::iterator it_u = ref_chan.getChannelUserNickMap().begin();
 		std::map<std::string, User *>::iterator it_u_e = ref_chan.getChannelUserNickMap().end();
@@ -60,10 +60,10 @@ int Server::joinCmd(User& user, Message& msg)
 				std::string shit = ":" + user.getFullName() + " JOIN " + chans.front();
 				sendToClient(it_u->second->getUserFD(), shit);
 			}
-            sendReply(user.getUserFD(), RPL_NAMREPLY, it_u->second->getNickName() + " = " + chans.front() + " :" + users_names, "",
-                      ":" + _config.server_name);
-            sendReply(user.getUserFD(), RPL_ENDOFNAMES, it_u->second->getNickName() + " " + chans.front(), "",
-                      ":" + _config.server_name);
+			sendReply(user.getUserFD(), RPL_NAMREPLY, it_u->second->getNickName() + " = " + chans.front() + " :" + users_names, "",
+					  ":" + _config.server_name);
+			sendReply(user.getUserFD(), RPL_ENDOFNAMES, it_u->second->getNickName() + " " + chans.front(), "",
+					  ":" + _config.server_name);
 		}
 
 		chans.pop();
@@ -143,15 +143,15 @@ int Server::partCmd(User& user, Message& msg)
 
 int Server::whoCmd(User& user, Message &msg)
 {
-    std::string g;
+	std::string g;
 	std::map<std::string, User *>::iterator it_b = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().begin();
 	std::map<std::string, User *>::iterator it_e = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().end();
 	for (; it_b != it_e; it_b++){
-        sendReply(user.getUserFD(), RPL_WHOREPLY, user.getNickName() + " " + msg.getParamsStr() + " " + it_b->second->getUserName()
-            + " * localhost " + it_b->second->getNickName() + " H :0 " + it_b->second->getRealName(), "", ":" + _config.server_name);
+		sendReply(user.getUserFD(), RPL_WHOREPLY, user.getNickName() + " " + msg.getParamsStr() + " " + it_b->second->getUserName()
+			+ " * localhost " + it_b->second->getNickName() + " H :0 " + it_b->second->getRealName(), "", ":" + _config.server_name);
 	}
-    sendReply(user.getUserFD(), RPL_ENDOFWHO, user.getNickName() + " " + msg.getParamsStr(), "",
-              ":" + _config.server_name);
+	sendReply(user.getUserFD(), RPL_ENDOFWHO, user.getNickName() + " " + msg.getParamsStr(), "",
+			  ":" + _config.server_name);
 	return 0;
 }
 
