@@ -161,10 +161,10 @@ int Server::whoCmd(User& user, Message &msg)
 int Server::modeCmd(User& user, Message &msg)
 {
 	// Проверка на канал
-	if (msg.getParams().size() > 1 && _channels_map.find(msg.getParams()[0]) != _channels_map.end())
+	if (msg.getParams().size() > 2 && msg.getParams()[0][0] == '#' && _channels_map.find(msg.getParams()[0]) != _channels_map.end())
 	{
 		Channel& chan = *_channels_map[msg.getParams()[0]];
-		std::string nick = user.getNickName();
+		std::string nick = msg.getParams()[2];
 		if (msg.getParams()[1] == "+o")
 		{
 			// Смена флага пользователя
@@ -179,6 +179,13 @@ int Server::modeCmd(User& user, Message &msg)
 			// Удаление из списка операторов канала
 			chan.getChannelOperators().erase(chan.getChannelOperators().find(nick));
 		}
+
+		std::string reply = ":" + user.getFullName() + " MODE " + msg.getParamsStr();
+		std::map<std::string, User *>::iterator it_u = chan.getChannelUserNickMap().begin();
+		std::map<std::string, User *>::iterator it_u_e = chan.getChannelUserNickMap().end();
+
+		for (;it_u != it_u_e; it_u++)
+			sendToClient(it_u->second->getUserFD(), reply);
 	}
 
 	return 0;
