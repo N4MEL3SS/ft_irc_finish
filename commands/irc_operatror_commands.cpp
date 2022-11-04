@@ -72,7 +72,7 @@ int Server::operCmd(User &user, Message &message){
 	if (password.empty())
 		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, "");
 
-	if (password == _config.operator_password)
+	if (password.compare( _config.operator_password))
 		return sendError(user.getUserFD(), ERR_PASSWDMISMATCH, "");
 
 	user.setIrcOperatorStatus(true);

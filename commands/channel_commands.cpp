@@ -181,11 +181,16 @@ int Server::modeCmd(User& user, Message &msg)
 		}
 
 		std::string reply = ":" + user.getFullName() + " MODE " + msg.getParamsStr();
+
+
 		std::map<std::string, User *>::iterator it_u = chan.getChannelUserNickMap().begin();
 		std::map<std::string, User *>::iterator it_u_e = chan.getChannelUserNickMap().end();
 
-		for (;it_u != it_u_e; it_u++)
+		for (;it_u != it_u_e; it_u++){
+			reply = reply.substr(0, reply.find('\n'));
 			sendToClient(it_u->second->getUserFD(), reply);
+		}
+
 	}
 
 	return 0;
