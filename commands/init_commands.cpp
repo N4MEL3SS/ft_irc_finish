@@ -21,7 +21,7 @@ void Server::initCommands()
 	_commands_map["WHO"] = &Server::whoCmd;
 //
 //	_commands_map["INVITE"] = &Server::
-//	_commands_map["KICK"] = &Server::
+	_commands_map["KICK"] = &Server::kickCmd;
 //	_commands_map["TOPIC"] = &Server::
 //	_commands_map["LIST"] = &Server::
 //

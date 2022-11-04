@@ -83,6 +83,7 @@ class Server
 	int pingCmd(User& user, Message& msg);
 	int isonCmd(User& user, Message& msg);
 	int whoCmd(User& user, Message& chan);
+	int kickCmd(User& user, Message &msg);
 
 	int findPollfd(int fd);
 

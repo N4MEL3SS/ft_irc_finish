@@ -12,6 +12,7 @@ Channel::~Channel() {}
 std::map<std::string, int> &Channel::getChannelUsers() { return this->_channel_users; }
 std::map<std::string, User *> &Channel::getChannelUserNickMap() { return this->_channel_user_nick_map; }
 int &Channel::getCountUsers() { return this->_count_users_in_channel; }
+std::string &Channel::getChannelName(){return _channel_name;}
 
 std::string& Channel::getChannelPassword()
 {

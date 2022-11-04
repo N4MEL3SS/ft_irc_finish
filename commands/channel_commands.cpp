@@ -56,10 +56,10 @@ int Server::joinCmd(User& user, Message& msg)
 
 		for (;it_u != it_u_e; it_u++)
 		{
-//			if (it_u->second != &user){
-//				std::string shit = ":" + user.getNickName() + " JOIN " + chans.front();
-//				sendToClient(it_u->second->getUserFD(), shit);
-//			}
+			if (it_u->second != &user){
+				std::string shit = ":" + user.getFullName() + " JOIN " + chans.front();
+				sendToClient(it_u->second->getUserFD(), shit);
+			}
             sendReply(user.getUserFD(), RPL_NAMREPLY, it_u->second->getNickName() + " = " + chans.front() + " :" + users_names, "",
                       ":" + _config.server_name);
             sendReply(user.getUserFD(), RPL_ENDOFNAMES, it_u->second->getNickName() + " " + chans.front(), "",
@@ -173,5 +173,21 @@ int Server::modeCmd(User& user, Message &msg)
 		}
 	}
 
+	return 0;
+}
+
+int Server::kickCmd(User& user, Message &msg)
+{
+	if (_channels_map.find(msg.getParams()[0]) != _channels_map.end())
+	{
+		Channel & ref_chan = *_channels_map[msg.getParams()[0]];
+		if (ref_chan.getChannelOperators().find(user.getNickName()) != ref_chan.getChannelOperators().end())
+		{
+			std::string reply = ":" + user.getFullName() + " KICK " + ref_chan.getChannelName() + " "
+					+ msg.getParams()[1] + "\r\n";
+			//int fd = _users_nick_map[msg.getParams()[1]]->getUserFD();
+			send(user.getUserFD(), reply.c_str(), reply.size(), 0);
+		}
+	}
 	return 0;
 }
