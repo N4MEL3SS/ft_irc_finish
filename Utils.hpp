@@ -15,8 +15,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>

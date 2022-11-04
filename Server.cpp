@@ -1,4 +1,3 @@
-#include <arpa/inet.h>
 #include "Server.hpp"
 
 Server::Server(int port, const std::string& password, const std::string& path_to_conf) :
