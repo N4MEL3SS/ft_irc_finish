@@ -45,7 +45,9 @@ int Server::privmsgCmd(User& user, Message& msg)
 	while (!recipients.empty())
 	{
 		if ((recipients.front()[0] == '#' || recipients.front()[0] == '&') && \
-			_channels_map.find(recipients.front()) != _channels_map.end())
+			_channels_map.find(recipients.front()) != _channels_map.end()
+                && _channels_map[recipients.front()]->getChannelUserNickMap().find(user.getNickName())
+                != _channels_map[recipients.front()]->getChannelUserNickMap().end())
 		{
 			sendPrivmsgChannel(user, msg, recipients.front());
 		}

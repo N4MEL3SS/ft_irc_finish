@@ -103,7 +103,7 @@ void Message::parsingMessage()
 
 void Message::joinString(std::vector<std::string>& dst, std::string& src)
 {
-	for (int i = 0; i < dst.size(); i++)
+	for (int i = 0; i < (int)dst.size(); i++)
 	{
 		if (!src.empty())
 			src += " ";

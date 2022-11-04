@@ -162,7 +162,7 @@ int Server::findPollfd(int fd)
 {
 	int i = 0;
 
-	while (i < _users_pollfd.size() && _users_pollfd[i].fd != fd)
+	while (i < (int)_users_pollfd.size() && _users_pollfd[i].fd != fd)
 		i++;
 
 	return i;

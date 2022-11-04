@@ -95,7 +95,7 @@ int Server::checkChannelsError(User& user, Message &msg)
 {
 	if (msg.getParams().empty() && msg.getPostfix().empty())
 		return sendError(user.getUserFD(), ERR_NEEDMOREPARAMS, msg.getCommand());
-	else if (_channels_map.size() >= _config.max_channels)
+	else if ((int)_channels_map.size() >= _config.max_channels)
 		return sendError(user.getUserFD(), ERR_TOOMANYCHANNELS, intToString(_channels_map.size()));
 
 	return 0;
@@ -208,8 +208,14 @@ int Server::kickCmd(User& user, Message &msg)
 					+ nick_to_kick + " :";
 			std::map<int, User *>::iterator it = _users_fd_map.begin();
 
-			for (;it != _users_fd_map.end(); it++)
-				sendToClient(it->first, reply);
+            ref_chan.getChannelUserNickMap().erase(nick_to_kick);
+            ref_chan.getChannelUsers().erase(nick_to_kick);
+            ref_chan.getChannelOperators().erase(nick_to_kick);
+
+			for (;it != _users_fd_map.end(); it++){
+                reply = reply.substr(0, reply.find_first_of('\n'));
+                sendToClient(it->first, reply);
+            }
 		}
 	}
 

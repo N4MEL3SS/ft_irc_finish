@@ -7,7 +7,7 @@ int Server::isonCmd(User& user, Message& msg)
 
 	std::string nickname_list;
 
-	for (int i = 0; i < msg.getParams().size(); i++)
+	for (int i = 0; i < (int)msg.getParams().size(); i++)
 	{
 		if (_users_nick_map.find(msg.getParams()[i]) != _users_nick_map.end())
 		{

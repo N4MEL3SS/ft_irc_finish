@@ -8,11 +8,11 @@
 class Client
 {
 private:
-    std::map<std::string, std::string> dictionary;
-    std::string _pass;
+    int _port;
     std::string _host;
+    std::string _pass;
+    std::map<std::string, std::string> dictionary;
     std::string nickname;
-	int _port;
 	int _socket;
 public:
 	Client(int port, std::string host, std::string password);

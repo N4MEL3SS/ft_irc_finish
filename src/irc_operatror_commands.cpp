@@ -17,7 +17,7 @@ int Server::restartCmd(User &user, Message &message){
 
 	if (checkIrcOperatorStatus(user))
 	{
-		for (int i = 0; i < _users_pollfd.size(); i++)
+		for (int i = 0; i < (int)_users_pollfd.size(); i++)
 			_delete_users.push_back(_users_pollfd[i].fd);
 
 		deleteUsersFromServer();
