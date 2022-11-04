@@ -44,7 +44,8 @@ int Server::joinCmd(User& user, Message& msg)
 
 		std::map<std::string, int>::iterator it_b = ref_chan.getChannelUsers().begin();
 		std::map<std::string, int>::iterator it_e = ref_chan.getChannelUsers().end();
-		std::string users_names = "";
+		std::string users_names;
+
 		for (; it_b != it_e; it_b++)
 		{
 			if (it_b->second == CHANNEL_O_FLAG)
@@ -146,32 +147,37 @@ int Server::whoCmd(User& user, Message &msg)
 	std::string g;
 	std::map<std::string, User *>::iterator it_b = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().begin();
 	std::map<std::string, User *>::iterator it_e = _channels_map[msg.getParamsStr()]->getChannelUserNickMap().end();
+
 	for (; it_b != it_e; it_b++){
 		sendReply(user.getUserFD(), RPL_WHOREPLY, user.getNickName() + " " + msg.getParamsStr() + " " + it_b->second->getUserName()
 			+ " * localhost " + it_b->second->getNickName() + " H :0 " + it_b->second->getRealName(), "", ":" + _config.server_name);
 	}
 	sendReply(user.getUserFD(), RPL_ENDOFWHO, user.getNickName() + " " + msg.getParamsStr(), "",
 			  ":" + _config.server_name);
+
 	return 0;
 }
 
 int Server::modeCmd(User& user, Message &msg)
 {
-	// TODO: Проверка на канал
+	// Проверка на канал
 	if (msg.getParams().size() > 1 && _channels_map.find(msg.getParams()[0]) != _channels_map.end())
 	{
 		Channel& chan = *_channels_map[msg.getParams()[0]];
-		if (msg.getParams()[1][0] == '+')
+		std::string nick = user.getNickName();
+		if (msg.getParams()[1] == "+o")
 		{
-			for (int i = 1; i < msg.getParams().size(); i++)
-			{
-				if (msg.getParams()[1][i] == 'o')
-				{
-					if (_users_nick_map.find(msg.getParams()[1]) != _users_nick_map.end())
-					{
-					}
-				}
-			}
+			// Смена флага пользователя
+			chan.getChannelUsers()[nick] = CHANNEL_O_FLAG;
+			// Добавление в список операторов канала
+			chan.getChannelOperators()[nick] = &user;
+		}
+		else if (msg.getParams()[1] == "-o")
+		{
+			// Смена флага пользователя
+			chan.getChannelUsers()[nick] = CHANNEL_N_FLAG;
+			// Удаление из списка операторов канала
+			chan.getChannelOperators().erase(chan.getChannelOperators().find(nick));
 		}
 	}
 
@@ -183,7 +189,7 @@ int Server::kickCmd(User& user, Message &msg)
 	if (_channels_map.find(msg.getParams()[0]) != _channels_map.end())
 	{
 		Channel & ref_chan = *_channels_map[msg.getParams()[0]];
-		if (ref_chan.getChannelOperators().find(user.getNickName()) != ref_chan.getChannelOperators().end())
+		if (ref_chan.getChannelUsers()[user.getNickName()] == CHANNEL_O_FLAG)
 		{
 			std::string nick_to_kick = msg.getParams()[1].substr(0, msg.getParams()[1].find_first_of(','));
 			std::string reply = ":" + user.getFullName () + " KICK " + ref_chan.getChannelName() + " "
