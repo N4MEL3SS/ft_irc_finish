@@ -1,8 +1,9 @@
 #include "Utils.hpp"
 
-void sendReply(int user_fd, int reply, const std::string& nick, const std::string& arg, const std::string& conf_name)
+void sendReply(int user_fd, int reply, const std::string& nick, const std::string& arg,
+               const std::string& conf_name)
 {
-	std::string message = conf_name + intToString(reply) + ' ' + nick;
+	std::string message = conf_name + " " + intToString(reply) + " " + nick;
 
 	switch(reply)
 	{
@@ -30,20 +31,22 @@ void sendReply(int user_fd, int reply, const std::string& nick, const std::strin
 	case RPL_ISON:
 //		message +=
 		break;
+    case RPL_WHOREPLY:
+        break;
 	case RPL_ENDOFWHO:
-		message += nick + " :End of /WHO list";
+		message += " :End of /WHO list";
 		break;
 	case RPL_NOTOPIC:
-//		message +=
+		message += " :No topic is set";
 		break;
 	case RPL_TOPIC:
-		message += nick + " :No topic is set";
+//		message +=
 		break;
 	case RPL_NAMREPLY:
 //		message +=
 		break;
 	case RPL_ENDOFNAMES:
-		message += nick + " :End of /NAMES list";
+		message += " :End of /NAMES list";
 		break;
 	}
 

@@ -77,7 +77,8 @@ std::queue<std::string> split(const std::string &str, char sep);
 void replaceCRLF(std::string& msg);
 
 int sendError(int user_fd, int reply, const std::string& arg);
-void sendReply(int user_fd, int reply, const std::string& nick = "", const std::string& arg = "", const std::string &conf_name = "");
+void sendReply(int user_fd, int reply, const std::string& nick = "", const std::string& arg = "",
+               const std::string &conf_name = "");
 void sendToClient(int fd, std::string& msg);
 
 #endif //UTILS_HPP
