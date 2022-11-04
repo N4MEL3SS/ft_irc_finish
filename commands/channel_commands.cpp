@@ -187,16 +187,13 @@ int Server::kickCmd(User& user, Message &msg)
 		{
 			std::string nick_to_kick = msg.getParams()[1].substr(0, msg.getParams()[1].find_first_of(','));
 			std::string reply = ":" + user.getFullName () + " KICK " + ref_chan.getChannelName() + " "
-					+ nick_to_kick + " :\r\n";
-			int fd = _users_nick_map[nick_to_kick]->getUserFD();
-			std::cout << fd << reply <<'\n';
+					+ nick_to_kick + " :";
 			std::map<int, User *>::iterator it = _users_fd_map.begin();
-			while (it != _users_fd_map.end()){
-				send(it->first, reply.c_str(), reply.size(), 0);
-				it++;
-			}
 
+			for (;it != _users_fd_map.end(); it++)
+				sendToClient(it->first, reply);
 		}
 	}
+
 	return 0;
 }
